@@ -1,80 +1,125 @@
 <html>
 
 <head>
-  <base href="/cms/index.html" />
-  <meta charset="utf-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="IVE CMS">
-  <meta name="author" content="Nico Steffens">
+	<base href="/cms/index.html" />
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta name="description" content="IVE CMS">
+	<meta name="author" content="Nico Steffens">
 
-  <title>IVE - CMS</title>
+	<title>IVE - CMS</title>
 
-  <!-- Favicons -->
-  <link rel="apple-touch-icon" sizes="180x180" href="../favicons/apple-touch-icon.png">
-  <link rel="icon" type="image/png" href="../favicons/favicon-32x32.png" sizes="32x32">
-  <link rel="icon" type="image/png" href="../favicons/favicon-16x16.png" sizes="16x16">
-  <link rel="manifest" href="../favicons/manifest.json">
-  <link rel="mask-icon" href="../favicons/safari-pinned-tab.svg" color="#007fff">
-  <link rel="shortcut icon" href="../favicons/favicon.ico">
-  <meta name="apple-mobile-web-app-title" content="IVE CMS">
-  <meta name="application-name" content="IVE CMS">
-  <meta name="msapplication-TileColor" content="#fcfff5">
-  <meta name="msapplication-TileImage" content="../favicons/mstile-144x144.png">
-  <meta name="msapplication-config" content="../favicons/browserconfig.xml">
-  <meta name="theme-color" content="#fcfff5">
+	<!-- Favicons -->
+	<link rel="apple-touch-icon" sizes="180x180" href="../favicons/apple-touch-icon.png">
+	<link rel="icon" type="image/png" href="../favicons/favicon-32x32.png" sizes="32x32">
+	<link rel="icon" type="image/png" href="../favicons/favicon-16x16.png" sizes="16x16">
+	<link rel="manifest" href="../favicons/manifest.json">
+	<link rel="mask-icon" href="../favicons/safari-pinned-tab.svg" color="#007fff">
+	<link rel="shortcut icon" href="../favicons/favicon.ico">
+	<meta name="apple-mobile-web-app-title" content="IVE CMS">
+	<meta name="application-name" content="IVE CMS">
+	<meta name="msapplication-TileColor" content="#fcfff5">
+	<meta name="msapplication-TileImage" content="../favicons/mstile-144x144.png">
+	<meta name="msapplication-config" content="../favicons/browserconfig.xml">
+	<meta name="theme-color" content="#fcfff5">
 
-  <!-- Bootstrap -->
-  <link href="../bower_components/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet" />
-  <!-- only for alpha version -->
-  <link href="../bower_components/tether/dist/css/tether.min.css" rel="stylesheet" />
-  <script src="../bower_components/tether/dist/js/tether.min.js"></script>
+	<!-- Bootstrap -->
+	<link href="../bower_components/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet" />
+	<!-- only for alpha version -->
+	<link href="../bower_components/tether/dist/css/tether.min.css" rel="stylesheet" />
+	<script src="../bower_components/tether/dist/js/tether.min.js"></script>
 
-  <!-- Font-Awesome -->
-  <link href="../bower_components/font-awesome/css/font-awesome.min.css" rel="stylesheet" />
+	<!-- Font-Awesome -->
+	<link href="../bower_components/font-awesome/css/font-awesome.min.css" rel="stylesheet" />
 
-  <!-- Custom styles -->
-  <link href="css/styles.css" rel="stylesheet" />
+	<!-- Custom styles -->
+	<link href="css/styles.css" rel="stylesheet" />
 
-  <!-- Dependecies -->
-  <script src="../bower_components/jquery/dist/jquery.min.js"></script>
-  <script src="../bower_components/underscore/underscore.js"></script>
-  <script src="../bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
-  <script src="../bower_components/moment/min/moment.min.js"></script>
-  <script src="../bower_components/angular/angular.min.js"></script>
-  <script src="../bower_components/angular-route/angular-route.min.js"></script>
-  <script src="../bower_components/angular-sanitize/angular-sanitize.min.js"></script>
-  <script src="../bower_components/angular-translate/angular-translate.min.js"></script>
-  <script src="../bower_components/angular-underscore-module/angular-underscore-module.js"></script>
-  <script src="../bower_components/angular-momentjs/angular-momentjs.js"></script>
+	<!-- Dependencies -->
+	<script src="../bower_components/jquery/dist/jquery.min.js"></script>
+	<script src="../bower_components/underscore/underscore.js"></script>
+	<script src="../bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+	<script src="../bower_components/moment/min/moment.min.js"></script>
+	<script src="../bower_components/angular/angular.min.js"></script>
+	<script src="../bower_components/angular-route/angular-route.min.js"></script>
+	<script src="../bower_components/angular-sanitize/angular-sanitize.min.js"></script>
+	<script src="../bower_components/angular-translate/angular-translate.min.js"></script>
+	<script src="../bower_components/angular-underscore-module/angular-underscore-module.js"></script>
+	<script src="../bower_components/angular-momentjs/angular-momentjs.js"></script>
 
 </head>
 
 <body ng-app="ive_cms">
 
-  <!--<header ng-controller="navController">-->
-  <header>
-    <nav class="navbar navbar-default navbar-static-top">
-      <a class="navbar-brand" href="/">
-        <img src="images/logo.svg" height="30"> {{config.appName}}-{{config.appSubname}}
-      </a>
+	<!--<header ng-controller="navController">-->
+	<!-- Navigation -->
+	<nav class="navbar navbar-toggleable-md fixed-top">
+		<button class="navbar-toggler navbar-toggler-right hidden-lg-up" type="button" data-toggle="collapse" data-target="#navbarsExampleDefault"
+			aria-controls="navbarsExampleDefault" aria-expanded="false" aria-label="Toggle navigation">
+			<span class="navbar-toggler-icon"></span>
+			</button>
+			<a class="navbar-brand" href="#">IVE CMS</a>
 
-    </nav>
 
-  </header>
+			<div class="collapse navbar-collapse" id="navbarsExampleDefault">
+				<ul class="navbar-nav mr-auto">
+					<li class="nav-item active">
+						<a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
+					</li>
+					<li class="nav-item">
+						<a class="nav-link" href="#">Settings</a>
+					</li>
+					<li class="nav-item">
+						<a class="nav-link" href="#">Profile</a>
+					</li>
+					<li class="nav-item">
+						<a class="nav-link" href="#">Help</a>
+					</li>
+				</ul>
+			</div>
+	</nav>
 
-  <p>Hello Content!</p>
-  <main ng-view></main>
+	<div class="container-fluid">
+		<div class="row">
+			<!--Sidebar-->
+			<nav class="col-sm-3 col-md-2 hidden-xs-down bg-faded sidebar">
+				<ul class="nav nav-pills flex-column">
+					<li class="nav-item">
+						<a class="nav-link" href="#">Scenarios</a>
+					</li>
+					<li class="nav-item">
+						<a class="nav-link" href="#">Videos</a>
+					</li>
+					<li class="nav-item">
+						<a class="nav-link" href="#">Overlays</a>
+					</li>
+					<li class="nav-item">
+						<a class="nav-link" href="#">Locations</a>
+					</li>
+					<li class="nav-item">
+						<a class="nav-link" href="#">Database</a>
+					</li>
+				</ul>
+			</nav>
 
-  <!-- App Config -->
-  <script src="js/config.js"></script>
+			<!--Main Content Area-->
+			<main ng-view class="col-sm-9 offset-sm-3 col-md-10 offset-md-2 pt-3">
+			</main>
+		</div>
+	</div>
 
-  <!-- App Modules -->
-  <script src="js/modules/routes.js"></script>
-  <!--<script src="js/modules/languages.js"></script>-->
-  <!--<script src="js/modules/filters.js"></script>-->
+	<!-- App Config -->
+	<script src="js/config.js"></script>
 
-  <!-- Main App-->
-  <script src="js/app.js"></script>
+	<!-- App Modules -->
+	<script src="js/modules/routes.js"></script>
+	<!--<script src="js/modules/languages.js"></script>-->
+	<!--<script src="js/modules/filters.js"></script>-->
 
+	<!-- Main App-->
+	<script src="js/app.js"></script>
+
+	<!--Controllers-->
+	<script src="js/controllers/homeController.js"></script>
 </body>
