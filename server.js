@@ -16,7 +16,7 @@ var httpsPort = process.env.HTTPS_PORT || (httpPort + 443);
 var db_host = process.env.DB_HOST || '127.0.0.1';
 var db_port = process.env.DB_PORT || '7687';
 var db_user = process.env.DB_USER || 'neo4j';
-var db_password = process.env.DB_PASSWORD || '123456';
+var db_password = process.env.DB_PASSWORD || 'pw_4_neo4j';
 var backend_user = process.env.BACKEND_USER || 'admin';
 var backend_password = process.env.BACKEND_PASSWORD || 'admin';
 var jwtSecret = process.env.JWTSECRET || 'superSecretKey';
@@ -79,6 +79,7 @@ var videos = require('./routes/videos');
 var overlays = require('./routes/overlays');
 var relationships = require('./routes/relationships');
 var handlers = require('./routes/handlers');
+
 app.use('/api', reset);
 app.use('/api', login);
 app.use('/api', scenarios);
@@ -87,6 +88,10 @@ app.use('/api', videos);
 app.use('/api', overlays);
 app.use('/api', relationships);
 app.use('/api', handlers);
+
+// CMS Hook
+
+var cms = require('./routes/cms');
 
 
 // Resolve path after refreshing inside app

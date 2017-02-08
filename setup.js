@@ -6,7 +6,7 @@ var fs = require('fs');
 var db_host = process.env.DB_HOST || '127.0.0.1';
 var db_port = process.env.DB_PORT || '7687';
 var db_user = process.env.DB_USER || 'neo4j';
-var db_password = process.env.DB_PASSWORD || '123456';
+var db_password = process.env.DB_PASSWORD || 'pw_4_neo4j';
 
 // Connect to Neo4j
 var driver = neo4j.driver("bolt://" + db_host + ":" + db_port, neo4j.auth.basic(db_user, db_password));
