@@ -1,4 +1,4 @@
-<html>
+<html ng-app="ive_cms">
 
 <head>
 	<base href="/cms/index.html" />
@@ -50,7 +50,7 @@
 
 </head>
 
-<body ng-app="ive_cms">
+<body>
 
 	<!--<header ng-controller="navController">-->
 	<!-- Navigation -->
@@ -59,17 +59,13 @@
 			aria-controls="navbarsExampleDefault" aria-expanded="false" aria-label="Toggle navigation">
 			<span class="navbar-toggler-icon"></span>
 			</button>
-			<a class="navbar-brand" href="#">IVE CMS</a>
-
-
-			<div class="offset-md-1" style="position: absolute">
-				<nav class="breadcrumb">
-					<a class="breadcrumb-item" href="#">Home</a>
-					<a class="breadcrumb-item" href="#">Library</a>
-					<a class="breadcrumb-item" href="#">Data</a>
-					<span class="breadcrumb-item active">Bootstrap</span>
-				</nav>
-			</div>
+			<a class="col-md-1 navbar-brand" href="#">IVE CMS</a>
+			<nav class="offset-md-1 breadcrumbs">
+				<a class="breadcrumb-item" href="#">Home</a>
+				<a class="breadcrumb-item" href="#">Library</a>
+				<a class="breadcrumb-item" href="#">Data</a>
+				<span class="breadcrumb-item active">Bootstrap</span>
+			</nav>
 	</nav>
 
 	<div class="container-fluid">

@@ -32,7 +32,6 @@ app.config(function($logProvider, config) {
     $logProvider.debugEnabled(config.debugMode);
 });
 
-
 /**
  * Start application
  */
