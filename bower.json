@@ -24,7 +24,9 @@
     "underscore": "^1.8.3",
     "angular-underscore-module": "^1.0.3",
     "moment": "^2.17.1",
-    "angular-momentjs": "^0.2.2"
+    "angular-momentjs": "^0.2.2",
+    "leaflet": "^1.0.3",
+    "ui-leaflet": "^2.0.0"
   },
   "resolutions": {
     "angular": "1.6.1",

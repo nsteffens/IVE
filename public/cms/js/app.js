@@ -8,6 +8,7 @@ var app = angular.module("ive_cms", [
     "ngSanitize",
     // "pascalprecht.translate",
     "angular-momentjs",
+    "ui-leaflet",
 
     // Own Modules
 
@@ -17,11 +18,11 @@ var app = angular.module("ive_cms", [
 
     // Services
 
-    // "authenticationService",
-    // "scenarioService",
-    // "locationService",
-    // "videoService",
-    // "relationshipService"
+    "authenticationService",
+    "scenarioService",
+    "locationService",
+    "videoService",
+    "relationshipService"
 ]);
 
 /**

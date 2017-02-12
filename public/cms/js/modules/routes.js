@@ -40,11 +40,11 @@ app.config(function ($routeProvider, $locationProvider, config) {
 
     $routeProvider
         .when("/", {
-            templateUrl: "js/templates/home.html",
+            templateUrl: "js/templates/home/home.html",
             controller: "homeController",
             css: "css/templates/home.css"
         })
-        // .when("/scenarios", {
+        //.when("/scenarios", {
         //     templateUrl: "js/templates/scenariosOverview.html",
         //     controller: "scenarioOverviewController"
         // })

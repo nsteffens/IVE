@@ -14,7 +14,7 @@ app.constant("config", {
     appVersion: "v1.0",
     appLanguage: 'en_US',
     appYear: moment().format("YYYY"),
-    // apiURL: "/api",
-    debugMode: false,
+    apiURL: "/api",
+    debugMode: true,
     html5Mode: true
 });
