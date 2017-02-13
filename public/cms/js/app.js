@@ -11,7 +11,6 @@ var app = angular.module("ive_cms", [
     "ui-leaflet",
 
     // Own Modules
-
     "routes",
     // "languages",
     // "filters",

@@ -1,22 +1,55 @@
 var app = angular.module("ive_cms");
 
 app.controller("homeController", function ($scope, $relationshipService, leafletData) {
+
+
+    var scenario_markers = [];
+    var video_markers = [];
+
+    var featureGroup;
+
+
     $relationshipService.list_by_type("belongs_to", "location")
         .then(function onSuccess(response) {
-            $scope.locations = response.data;
 
+            // Iterate over the locations and create markers --> add type (video / scenarios) to obj
+            var scenarioID = "";
+            response.data.forEach(function (element) {
+
+                // Indoor locations won't be added but it's abstract parent will
+                if (element.location_type != "indoor") {
+
+                    // Expect that we have a scenario here we want to display
+                    if (scenarioID == element.s_id) {
+                        return;
+                    }
+
+                    scenarioID = element.s_id;
+
+                    var markerObject = L.marker(L.latLng(element.location_lat, element.location_lng), { title: element.scenario_name })
+
+                    if (element.location_type == "abstract") {
+                        markerObject.options.title = element.location_name + " ABSTRACT";
+                    }
+
+                    scenario_markers.push(markerObject)
+
+                }
+            }, this);
 
             // Prepared for map manipulation...
-            leafletData.getMap().then(function (map) {
+            leafletData.getMap('map').then(function (map) {
 
+                featureGroup = L.featureGroup(scenario_markers).addTo(map);
+                map.fitBounds(featureGroup.getBounds(), { animate: false, padding: L.point(50,50) })
 
             })
 
-            console.log(response);
         })
         .catch(function onError(response) {
             $window.alert(response.data);
         });
+
 
     angular.extend($scope, {
         london: {
@@ -24,15 +57,47 @@ app.controller("homeController", function ($scope, $relationshipService, leaflet
             lng: -0.09,
             zoom: 4
         },
-        markers: {
-            myMarker: {
-                lat: 51.505,
-                lng: -0.09,
-                focus: false,
-                icon: {}
-            }
+        defaults: {
+            tileLayer: "http://{s}.tile.openstreetmap.se/hydda/full/{z}/{x}/{y}.png",
+            tileLayerOptions: {
+                opacity: 0.9,
+                detectRetina: true,
+                reuseTiles: true
+            },
+            scrollWheelZoom: false
         }
     });
+
+
+
+
+
+    var myMarker = {
+        lat: 51.505,
+        lng: 7.09,
+        focus: true,
+        draggable: false,
+        message: "Hi there!"
+    }
+
+    var myMarkerArray = [
+        myMarker = {
+            lat: 51.505,
+            lng: 7.09,
+            focus: true,
+            draggable: false,
+            message: "Hi there!"
+        }, myMarker2 = {
+            lat: 51.505,
+            lng: 10.09,
+            focus: true,
+            draggable: false,
+            message: "Hi there!"
+        }
+    ]
+
+
+
 
 
 });

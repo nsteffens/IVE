@@ -3,6 +3,7 @@ h1 {
 }
 
 .col-center{
+    float: none;
     margin: 0 auto;
 }
 
@@ -73,3 +74,6 @@ main {
     text-shadow: 0 0 5px #193441;
 }
 
+.mapbox {
+    text-align: center;
+}
