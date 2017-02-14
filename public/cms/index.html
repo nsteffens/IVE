@@ -78,13 +78,19 @@
 	<div class="container-fluid">
 		<div class="row">
 			<!--Sidebar-->
-			<nav class="col-sm-3 col-md-2 hidden-xs-down bg-faded sidebar">
+			<nav ng-controller="navController" class="col-sm-3 col-md-2 hidden-xs-down bg-faded sidebar">
 				<ul class="nav nav-pills flex-column">
 					<li class="nav-item">
-						<a href="/cms/scenarios">
+						<a href="" ng-click="redirect('/scenarios')">
 							<i class="fa fa-street-view fa-2x" aria-hidden="true" href="#"></i>
 							<span class="nav-link">Scenarios</span>
 						</a>
+					</li>
+					<li ng-show="isActive('/scenarios')" class="nav-item nav-subitem">
+						<ul>
+							<li class="nav-sublink"><span>Overview</span></li>
+							<li class="nav-sublink"><span>Create new</span></li>
+						</ul>
 					</li>
 					<li class="nav-item">
 						<a href="/cms/videos">
@@ -92,17 +98,35 @@
 							<span class="nav-link">Videos</span>
 						</a>
 					</li>
+					<li ng-show="isActive('/videos')" class="nav-item nav-subitem">
+						<ul>
+							<li class="nav-sublink"><span>Overview</span></li>
+							<li class="nav-sublink"><span>Create new</span></li>
+						</ul>
+					</li>
 					<li class="nav-item">
 						<a href="/cms/overlays">
 							<i class="fa fa-window-maximize fa-2x" aria-hidden="true"></i>
 							<span class="nav-link">Overlays</span>
 						</a>
 					</li>
+					<li ng-show="isActive('/overlays')" class="nav-item nav-subitem">
+						<ul>
+							<li class="nav-sublink"><span>Overview</span></li>
+							<li class="nav-sublink"><span>Create new</span></li>
+						</ul>
+					</li>
 					<li class="nav-item">
 						<a href="/cms/locations">
 							<i class="fa fa-map-marker fa-2x" aria-hidden="true"></i>
 							<span class="nav-link">Locations</span>
 						</a>
+					</li>
+					<li ng-show="isActive('/locations')" class="nav-item nav-subitem">
+						<ul>
+							<li class="nav-sublink"><span>Overview</span></li>
+							<li class="nav-sublink"><span>Create new</span></li>
+						</ul>
 					</li>
 					<li class="nav-item">
 						<a href="/cms/database">
@@ -139,5 +163,7 @@
 	<script src="js/services/relationshipService.js"></script>
 
 	<!--Controllers-->
+	<script src="js/controllers/navController.js"></script>
 	<script src="js/controllers/homeController.js"></script>
+	<script src="js/controllers/scenarioOverviewController.js"></script>
 </body>

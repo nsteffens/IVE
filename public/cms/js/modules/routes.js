@@ -40,14 +40,15 @@ app.config(function ($routeProvider, $locationProvider, config) {
 
     $routeProvider
         .when("/", {
-            templateUrl: "js/templates/home/home.html",
+            templateUrl: "js/templates/home.html",
             controller: "homeController",
             css: "css/templates/home.css"
         })
-        //.when("/scenarios", {
-        //     templateUrl: "js/templates/scenariosOverview.html",
-        //     controller: "scenarioOverviewController"
-        // })
+        .when("/scenarios", {
+             templateUrl: "js/templates/scenarios/overview.html",
+             controller: "scenarioOverviewController",
+             css: "css/templates/scenarios/overview.css"
+        })
 
         // Redirect to home page
         .otherwise({

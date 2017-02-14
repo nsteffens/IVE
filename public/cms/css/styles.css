@@ -92,3 +92,16 @@ p {
    text-align: center;
 }
 
+.nav-subitem {
+    color: #fcfff5;
+    background-color: #3E606F;
+}
+
+.nav-subitem ul{
+    text-align: left;
+    padding: 1em 0 1em 40%;
+  }
+
+.nav-subitem li { 
+    list-style-position: inside;
+}

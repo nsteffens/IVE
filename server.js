@@ -91,7 +91,7 @@ app.use('/api', handlers);
 
 // CMS Hook
 var cms = require('./routes/cms');
-app.use('/cms', cms);
+// app.use('/cms', cms);
 
 // Resolve path after refreshing inside app
 app.get('/*', function(req, res, next) {

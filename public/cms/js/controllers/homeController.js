@@ -6,6 +6,8 @@ app.controller("homeController", function ($scope, $relationshipService, leaflet
     var scenario_markers = [];
     var video_markers = [];
 
+    $scope.active = '';
+
     var featureGroup;
 
 
@@ -52,11 +54,6 @@ app.controller("homeController", function ($scope, $relationshipService, leaflet
 
 
     angular.extend($scope, {
-        london: {
-            lat: 51.505,
-            lng: -0.09,
-            zoom: 4
-        },
         defaults: {
             tileLayer: "http://{s}.tile.openstreetmap.se/hydda/full/{z}/{x}/{y}.png",
             tileLayerOptions: {
@@ -67,38 +64,6 @@ app.controller("homeController", function ($scope, $relationshipService, leaflet
             scrollWheelZoom: false
         }
     });
-
-
-
-
-
-    var myMarker = {
-        lat: 51.505,
-        lng: 7.09,
-        focus: true,
-        draggable: false,
-        message: "Hi there!"
-    }
-
-    var myMarkerArray = [
-        myMarker = {
-            lat: 51.505,
-            lng: 7.09,
-            focus: true,
-            draggable: false,
-            message: "Hi there!"
-        }, myMarker2 = {
-            lat: 51.505,
-            lng: 10.09,
-            focus: true,
-            draggable: false,
-            message: "Hi there!"
-        }
-    ]
-
-
-
-
 
 });
 
