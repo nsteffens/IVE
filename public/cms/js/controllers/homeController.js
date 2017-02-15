@@ -1,6 +1,6 @@
 var app = angular.module("ive_cms");
 
-app.controller("homeController", function ($scope, $relationshipService, leafletData, $location) {
+app.controller("homeController", function ($scope, $relationshipService, leafletData, $location, $window) {
 
 
     var scenario_markers = [];

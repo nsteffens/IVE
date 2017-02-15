@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+
+<!--Header-->
+
+<div class="row col-center">
+    <!--Icon 1-->
+    <div class="col-md-4 col-lg-4 iconbox active">
+        <div class="hexagon">
+            <i class="fa fa-street-view fa-2x" aria-hidden="true"></i>
+        </div>
+        <span>I. Create Scenario</span>
+    </div>
+    <!--Icon 2-->
+    <div class="col-md-4 col-lg-4 iconbox" id="step2">
+        <div class="hexagon">
+            <i class="fa fa-file-video-o fa-2x" aria-hidden="true"></i>
+        </div>
+        <span>II. Add Video</span>
+    </div>
+    <!--Icon 3-->
+    <div class="col-md-4 col-lg-4 iconbox" id="step3">
+        <div class="hexagon">
+            <i class="fa fa-window-maximize fa-2x" aria-hidden="true"></i>
+        </div>
+        <span>III. Place Overlays</span>
+    </div>
+</div>
+<hr>
+</br>
+
+<!--Step 1 (General Information)-->
+<div class="row" ng-show="currentState.general">
+    <div class="col-md-6 col-center animate-show-hide">
+        <p>Step 1: General Information</p>
+        <div class="form-group row">
+            <label for="name-input" class="col-2 col-form-label">Name:</label>
+            <div class="col-10">
+                <input class="form-control" type="text" ng-model="newScenario.name" placeholder="e.g. 'Main Station Scenario'" id="name-input">
+            </div>
+        </div>
+        <div class="form-group row">
+            <label for="desc-input" class="col-2 col-form-label">Description:</label>
+            <div class="col-10">
+                <input class="form-control" type="text" ng-model="newScenario.description" placeholder="e.g. 'A scenario simulating a new construction'"
+                    id="desc-input">
+            </div>
+        </div>
+        <div class="form-group row">
+            <label for="tags-input" class="col-2 col-form-label">Tags:</label>
+            <div class="col-10">
+                <input class="form-control" type="text" ng-model="newScenario.tags" placeholder="e.g. '#muenster, #sitcom, #myProject'" id="tags-input">
+            </div>
+        </div>
+        <div class="form-group row">
+            <label for="created-input" class="col-2 col-form-label">Date</label>
+            <div class="col-10">
+                <input class="form-control" type="date" ng-model="newScenario.created" placeholder="01-01-2017" id="created-input">
+            </div>
+        </div>
+        <button type="button" class="btn btn-secondary float-left" ng-click="redirect('/scenarios')"><i class="fa fa-caret-left" aria-hidden="true"></i> Cancel</button>
+        <button type="button" class="btn btn-secondary float-right" ng-click="submitGeneral()">Next <i class="fa fa-caret-right" aria-hidden="true"></i></button>
+    </div>
+</div>
+
+<!--Step 2 (Add Videos - Overview)-->
+
+<div class="row" ng-show="currentState.addVideo">
+    <div class="col-md-12">
+        <p>Step 2: Add Videos to your scenario:</p>
+        <div class="row">
+            <div ng-repeat="video in newScenario.videos" class="col-md-4 scenario">
+                <p>{{video.name}}</p>
+                <img src="http://lorempixel.com/300/169"></br>
+                <a href="" ng-click=""><i class="fa fa-pencil-square-o" aria-hidden="true"></i></a>
+                <a href="" ng-click=""><i class="fa fa-trash-o" aria-hidden="true"></i></a></br>
+                <label for="vid_position">Position</label>
+                <input type="number" value="{{video.scenario_position}}" id="vid_position"></input>
+            </div>
+
+            <div class="col-md-4 addScenario">
+                <a href="" ng-click="addVideo()">Add video to Scenario</br>
+                <i class="fa fa-plus-square-o fa-4x" aria-hidden="true"></i></a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--Step 2.1 (Add new Video)-->
+
+<div ng-show="currentState.addNewVideo">
+
+    <p>Step 2: Add Videos</p>
+    
+    <label for="videoTypeSwitcher" class="col-form-label">Type of video:&nbsp</label>
+    <div class="btn-group" role="group" aria-label="Switcher" id="videoTypeSwitcher">
+        <button type="button" ng-click="switchVideoType()" ng-class="{'active': existingVideo === true}" class="btn btn-secondary">Existing</button>
+        <button type="button" ng-click="switchVideoType()" ng-class="{'active': existingVideo === false}" class="btn btn-secondary">New</button>
+    </div>
+
+    <div class="row" ng-hide="existingVideo">
+        <!--Add a new Video-->
+        <div class="col-md-6">
+            new
+        </div>
+
+        <div class="col-md-6">
+            <leaflet id="addNewVideoMap" defaults="defaults" width="100%" height="40%"></leaflet>
+            </br>
+            <div class="form-group row">
+                <label for="latitude" class="col-2 col-form-label">Latitude: </label>
+                <div class="col-2">
+                    <input class="form-control" type="number" ng-model="newVideo.location.latitude" placeholder=51.22 id="latitude">
+                </div>
+                <label for="longitude" class="col-2 col-form-label">Longitude: </label>
+                <div class="col-2 float-right">
+                    <input class="form-control" type="number" ng-model="newVideo.location.longitude" placeholder=7.04 id="longitude">
+                </div>
+
+                <div class="input-group" id="searchBar">
+                    <input type="text" class="form-control" placeholder="Search for...">
+                    <span class="input-group-btn">
+                        <button class="btn btn-secondary" type="button">Go!</button>
+                    </span>
+                </div>
+
+
+            </div>
+        </div>
+
+    </div>
+
+    <div class="row" ng-show="existingVideo">
+        <!--Add an existing video-->
+        <div class="col-md-12">
+            existing
+
+        </div>
+    </div>
+</div>
