@@ -1,6 +1,6 @@
 var app = angular.module("ive_cms");
 
-app.controller("homeController", function ($scope, $relationshipService, leafletData) {
+app.controller("homeController", function ($scope, $relationshipService, leafletData, $location) {
 
 
     var scenario_markers = [];
@@ -43,7 +43,7 @@ app.controller("homeController", function ($scope, $relationshipService, leaflet
             leafletData.getMap('map').then(function (map) {
 
                 featureGroup = L.featureGroup(scenario_markers).addTo(map);
-                map.fitBounds(featureGroup.getBounds(), { animate: false, padding: L.point(50,50) })
+                map.fitBounds(featureGroup.getBounds(), { animate: false, padding: L.point(50, 50) })
 
             })
 
@@ -64,6 +64,17 @@ app.controller("homeController", function ($scope, $relationshipService, leaflet
             scrollWheelZoom: false
         }
     });
+
+    /**
+ * [redirect description]
+ * @param  {[type]} path [description]
+ * @return {[type]}      [description]
+ */
+    $scope.redirect = function (path) {
+        console.log(path);
+
+        $location.url(path);
+    };
 
 });
 
