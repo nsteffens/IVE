@@ -66,7 +66,7 @@ app.use(bodyParser.urlencoded({
 
 // Set folder for static files
 app.use(express.static(__dirname + '/public', {
-    redirect: false
+    redirect: true
 }));
 
 
@@ -90,8 +90,13 @@ app.use('/api', relationships);
 app.use('/api', handlers);
 
 // CMS Hook
-var cms = require('./routes/cms');
+// var cms = require('./routes/cms');
 // app.use('/cms', cms);
+
+app.get('/cms', function (req, res) {
+
+    path.resolve('public/cms/index.html')
+})
 
 // Resolve path after refreshing inside app
 app.get('/*', function(req, res, next) {

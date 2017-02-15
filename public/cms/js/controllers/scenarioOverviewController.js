@@ -2,7 +2,8 @@ var app = angular.module("ive_cms");
 
 app.controller("scenarioOverviewController", function ($scope, $scenarioService) {
 
-    $scope.active = "scenarios";
+    // $scope.active = "scenarios";
+    $scope.subsite = "overview";
     $scope.portraitView = true;
     
 
