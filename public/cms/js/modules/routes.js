@@ -49,7 +49,7 @@ app.config(function ($routeProvider, $locationProvider, config) {
              controller: "scenarioOverviewController",
              css: "css/templates/scenarios/overview.css"
         })
-        .when("/scenarios/create-new", {
+        .when("/scenario/create-new", {
             tempalteUrl: "js/templates/scenarios/create-new.html",
             controller: "scenarioCreateNewController",
             css: "css/templates/scenarios/create-new.css"
