@@ -6,7 +6,8 @@ app.controller("scenarioCreateNewController", function ($scope, $scenarioService
         general: true,
         addVideo: false,
         addNewVideo: false,
-        addExistingVideo: false
+        addExistingVideo: false,
+        createOverlay: false
     };
 
     $scope.currentState.general = true;
@@ -35,7 +36,7 @@ app.controller("scenarioCreateNewController", function ($scope, $scenarioService
 
         // validate form input
         // format tags to array
-        console.log($scope.newScenario);
+        // console.log($scope.newScenario);
 
         $scope.currentState.general = false;
         $scope.currentState.addVideo = true;
@@ -60,6 +61,30 @@ app.controller("scenarioCreateNewController", function ($scope, $scenarioService
 
 
     }
+
+
+    $scope.createOverlay = function () {
+
+        $scope.currentState.addVideo = false;
+        $scope.currentState.createOverlay = true;
+        angular.element('#step3').addClass('active');
+
+        // Variable to indicate wether to add an existing or a new overlay
+        $scope.existingOverlay = false;
+
+        console.log($scope.newScenario.videos);
+
+    }
+
+    // Small function to switch the variable
+    $scope.switchOverlayType = function () {
+        if ($scope.existingOverlay) {
+            $scope.existingOverlay = false;
+        } else {
+            $scope.existingOverlay = true;
+        }
+    }
+
 
     // Small function to switch the variable
     $scope.switchVideoType = function () {
@@ -88,7 +113,7 @@ app.controller("scenarioCreateNewController", function ($scope, $scenarioService
                     i++;
                 }, this);
 
-                console.log($scope.newScenario.videos);
+                // console.log($scope.newScenario.videos);
             })
 
     }

@@ -62,7 +62,7 @@
     </div>
 </div>
 
-<!--Step 2 (Add Videos - Overview)-->
+<!--Step 2.1 (Add Videos - Overview)-->
 <div class="row" ng-show="currentState.addVideo">
     <div class="col-md-12">
         <p>Step 2: Add Videos to your scenario:</p>
@@ -72,8 +72,8 @@
                 <img src="http://lorempixel.com/300/169"></br>
                 <a href="" ng-click=""><i class="fa fa-pencil-square-o" aria-hidden="true"></i></a>
                 <a href="" ng-click=""><i class="fa fa-trash-o" aria-hidden="true"></i></a></br>
-                <label for="vid_position">Position</label>
-                <input type="number" value="{{video.scenario_position}}" id="vid_position"></input>
+                <!--<label for="vid_position">Position</label>
+                <input type="number" value="{{video.scenario_position}}" id="vid_position"></input>-->
             </div>
 
             <div class="col-md-4 addScenario">
@@ -81,11 +81,12 @@
                 <i class="fa fa-plus-square-o fa-4x" aria-hidden="true"></i></a>
             </div>
         </div>
+        <button type="button" class="btn btn-secondary float-left" ng-click=""><i class="fa fa-caret-left" aria-hidden="true"></i> Cancel</button>
+        <button type="button" class="btn btn-secondary float-right" ng-click="createOverlay()">Add Overlays <i class="fa fa-caret-right" aria-hidden="true"></i></button>
     </div>
 </div>
 
-<!--Step 2.1 (Add new Video)-->
-
+<!--Step 2.2 (Add new Video)-->
 <div ng-show="currentState.addNewVideo">
 
     <p>Step 2: Add Videos</p>
@@ -99,8 +100,9 @@
     <!--Add a new Video-->
     <div class="row" ng-hide="existingVideo">
         <div class="col-md-6">
-            <div ngf-drop ngf-select ng-model="files" class="upload-box" ngf-drag-over-class="'dragover'" ngf-multiple="true" ngf-allow-dir="true" accept="image/*,application/pdf" ngf-pattern="'image/*,application/pdf'">Drop pdfs or images here or click to upload</div>
-            <div ngf-no-file-drop>File Drag/Drop is not supported for this browser</div>
+            <!--<div ngf-drop ngf-select ng-model="files" class="upload-box" ngf-drag-over-class="'dragover'" ngf-multiple="true" ngf-allow-dir="true"
+                accept="image/*,application/pdf" ngf-pattern="'image/*,application/pdf'">Drop pdfs or images here or click to upload</div>
+        <div ngf-no-file-drop>File Drag/Drop is not supported for this browser</div>-->
 
             <div class="form-group row">
                 <label for="name-input" class="col-2 col-form-label">Name:</label>
@@ -129,7 +131,8 @@
             </div>
             <button type="button" class="btn btn-secondary float-left" ng-click=""><i class="fa fa-caret-left" aria-hidden="true"></i> Cancel</button>
             <button type="button" class="btn btn-secondary float-right" ng-click="">Add Video <i class="fa fa-caret-right" aria-hidden="true"></i></button>
-        </div> <!-- End col-md-6 -->
+        </div>
+        <!-- End col-md-6 -->
 
         <div class="col-md-6">
             <leaflet id="addNewVideoMap" defaults="defaults" width="100%" height="40%"></leaflet>
@@ -153,19 +156,69 @@
 
 
             </div>
-        </div> <!-- End col-md-6 -->
+        </div>
+        <!-- End col-md-6 -->
+    </div>
+    <!-- End row Add new Video-->
 
-    </div> <!-- End row Add new Video-->
-
-
-
-<!--</div>-->
     <!--Add an existing Video-->
     <div class="row" ng-show="existingVideo">
         <!--Add an existing video-->
         <div class="col-md-12">
-            existing
-
+            <leaflet id="addExistingVideoMap" defaults="defaults" width="100%" height="40%"></leaflet>
+            <div class="input-group" id="searchBar">
+                <input type="text" class="form-control" placeholder="Search for existing Videos">
+                <span class="input-group-btn">
+                            <button class="btn btn-secondary" type="button">Go!</button>
+                        </span>
+            </div>
+            <button type="button" class="btn btn-secondary float-left" ng-click=""><i class="fa fa-caret-left" aria-hidden="true"></i> Cancel</button>
+            <button type="button" class="btn btn-secondary float-right" ng-click="">Add Video <i class="fa fa-caret-right" aria-hidden="true"></i></button>
         </div>
     </div>
+</div>
+
+
+<!-- Step 3.1 (Create Overlays)-->
+
+<div class="row" ng-show="currentState.createOverlay">
+
+    <p class="introText">Create Overlay for Video: "{{newScenario.videos[0].name}}"</p>
+    <div class="col-md-12">
+        <label for="overlayTypeSwitcher" class="col-form-label float-left">Type of overlay:&nbsp</label>
+        <div class="btn-group float-left" role="group" aria-label="Switcher" id="overlayTypeSwitcher">
+            <button type="button" ng-click="switchOverlayType()" ng-class="{'active': existingOverlay === true}" class="btn btn-secondary">Existing</button>
+            <button type="button" ng-click="switchOverlayType()" ng-class="{'active': existingOverlay === false}" class="btn btn-secondary">New</button>
+        </div>
+
+        <button type="button" class="btn btn-secondary float-right" ng-click="">I don't want an overlay for this Video</button>
+
+        <br>
+    </div>
+
+    <!--Input fields-->
+    <div class="col-md-6">
+        <div class="input-group" ng-show="existingOverlay" id="searchBar">
+            <input type="text" class="form-control" placeholder="Search for existing Overlay">
+            <span class="input-group-btn">
+                <button class="btn btn-secondary" type="button">Go!</button>
+            </span>
+        </div>
+
+        <div ng-hide="existingOverlay">
+            new overlay
+        </div>
+    </div>
+
+    <!--Video preview-->
+    <div class="col-md-6">
+        Video Preview
+        <div style="background-color: black; width:400px; height:200px;"></div>
+    </div>
+
+
+
+
+
+
 </div>

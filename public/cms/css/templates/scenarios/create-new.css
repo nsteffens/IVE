@@ -1,4 +1,4 @@
-h1 {
+h1, h2, h3 {
     color: #193441;
 }
 
@@ -121,8 +121,9 @@ main {
 }
 
 #searchBar {
-    padding: 1em 15px;
+    padding: 1em 0px;
 }
+
 
 .upload-box {
     background: #F8F8F8;
@@ -132,4 +133,9 @@ main {
     text-align: center;
     margin: 1rem auto;
     padding-bottom: 2em;
+}
+
+
+.introText {
+    padding: 1em 1em;
 }
