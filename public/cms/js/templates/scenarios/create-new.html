@@ -81,7 +81,7 @@
                 <i class="fa fa-plus-square-o fa-4x" aria-hidden="true"></i></a>
             </div>
         </div>
-        <button type="button" class="btn btn-secondary float-left" ng-click=""><i class="fa fa-caret-left" aria-hidden="true"></i> Cancel</button>
+        <button type="button" class="btn btn-secondary float-left" ng-click="cancel('AddVideo')"><i class="fa fa-caret-left" aria-hidden="true"></i> Cancel</button>
         <button type="button" class="btn btn-secondary float-right" ng-click="createOverlay()">Add Overlays <i class="fa fa-caret-right" aria-hidden="true"></i></button>
     </div>
 </div>
@@ -180,7 +180,6 @@
 
 
 <!-- Step 3.1 (Create Overlays)-->
-
 <div class="row" ng-show="currentState.createOverlay">
 
     <p class="introText">Create Overlay for Video: "{{newScenario.videos[0].name}}"</p>
@@ -205,10 +204,37 @@
             </span>
         </div>
 
-        <div ng-hide="existingOverlay">
-            new overlay
+        <div class="newOverlay" ng-hide="existingOverlay">
+
+            <div class="form-group row">
+                <label for="name-input" class="col-3 col-form-label">Name:</label>
+                <div class="col-9">
+                    <input class="form-control" type="text" ng-model="newOverlay.name" placeholder="e.g. 'Main Station Scenario'" id="name-input">
+                </div>
+            </div>
+            <div class="form-group row">
+                <label for="desc-input" class="col-3 col-form-label">Description:</label>
+                <div class="col-9">
+                    <input class="form-control" type="text" ng-model="newOverlay.description" placeholder="e.g. 'A scenario simulating a new construction'"
+                        id="desc-input">
+                </div>
+            </div>
+            <div class="form-group row">
+                <label for="tags-input" class="col-3 col-form-label">Tags:</label>
+                <div class="col-9">
+                    <input class="form-control" type="text" ng-model="newOverlay.tags" placeholder="e.g. '#muenster, #sitcom, #myProject'" id="tags-input">
+                </div>
+            </div>
+            <div class="form-group row">
+                <label for="created-input" class="col-3 col-form-label">Link (URL):</label>
+                <div class="col-9">
+                    <input class="form-control" type="url" ng-model="newOverlay.url" placeholder="e.g. http://www.google.de" id="created-input">
+                </div>
+            </div>
         </div>
+
     </div>
+
 
     <!--Video preview-->
     <div class="col-md-6">
@@ -217,8 +243,16 @@
     </div>
 
 
+    <div class="col-md-12">
+        <button type="button" class="btn btn-secondary float-left" ng-click="cancel('createOverlay')"><i class="fa fa-caret-left" aria-hidden="true"></i> Cancel</button>
+        <button type="button" class="btn btn-secondary float-right" ng-click="placeOverlay()">Place Overlay <i class="fa fa-caret-right" aria-hidden="true"></i></button>
+    </div>
 
+</div>
 
+<!--Step 3.2 (Place Overlay)-->
+<div class="row" ng-show="currentState.placeOverlay">
 
+    -- Place the overlay here -- // Logic to be added soon.
 
 </div>

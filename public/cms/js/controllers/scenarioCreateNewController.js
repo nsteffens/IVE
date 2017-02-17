@@ -7,7 +7,8 @@ app.controller("scenarioCreateNewController", function ($scope, $scenarioService
         addVideo: false,
         addNewVideo: false,
         addExistingVideo: false,
-        createOverlay: false
+        createOverlay: false,
+        placeOverlay: false
     };
 
     $scope.currentState.general = true;
@@ -63,6 +64,21 @@ app.controller("scenarioCreateNewController", function ($scope, $scenarioService
     }
 
 
+    // Function to cancel an action and be redirected back to the last page
+    $scope.cancel = function (origin){
+
+        switch (origin) {
+            case 'AddVideo':
+                $scope.currentState.addVideo = false;
+                $scope.currentState.general = true;
+                return;
+            case 'createOverlay':
+                $scope.currentState.createOverlay = false;
+                $scope.currentState.addVideo = true;    
+        }
+
+    }
+
     $scope.createOverlay = function () {
 
         $scope.currentState.addVideo = false;
@@ -72,7 +88,21 @@ app.controller("scenarioCreateNewController", function ($scope, $scenarioService
         // Variable to indicate wether to add an existing or a new overlay
         $scope.existingOverlay = false;
 
+        var newOverlay = {
+            name: "",
+            description: "",
+            tags: [],
+            url: ""
+        }
+
         console.log($scope.newScenario.videos);
+
+    }
+
+    $scope.placeOverlay = function () {
+
+        $scope.currentState.createOverlay = false;
+        $scope.currentState.placeOverlay = true;
 
     }
 
