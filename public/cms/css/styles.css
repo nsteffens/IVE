@@ -105,3 +105,12 @@ p {
 .nav-subitem li { 
     list-style-position: inside;
 }
+
+.nav-sublink:hover {
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.nav-sublink {
+  padding-bottom: 0.5em;
+}
