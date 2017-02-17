@@ -10,6 +10,12 @@ var app = angular.module("ive_cms", [
     "angular-momentjs",
     "ui-leaflet",
     "ngFileUpload",
+    
+    // Videogular
+    "com.2fdevs.videogular",
+    "com.2fdevs.videogular.plugins.controls",
+    "com.2fdevs.videogular.plugins.overlayplay",
+    "com.2fdevs.videogular.plugins.poster",
 
     // Own Modules
     "routes",

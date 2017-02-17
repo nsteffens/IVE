@@ -1,6 +1,6 @@
 var app = angular.module("ive_cms");
 
-app.controller("scenarioCreateNewController", function ($scope, $scenarioService, $videoService, $location, $document, Upload) {
+app.controller("scenarioCreateNewController", function ($scope, $scenarioService, $videoService, $location, $document, Upload, $sce) {
 
     $scope.currentState = {
         general: true,
@@ -59,8 +59,6 @@ app.controller("scenarioCreateNewController", function ($scope, $scenarioService
             recorded: null,
             location: { latitude: 0, longitude: 0 }
         }
-
-
     }
 
 
@@ -84,6 +82,19 @@ app.controller("scenarioCreateNewController", function ($scope, $scenarioService
         $scope.currentState.addVideo = false;
         $scope.currentState.createOverlay = true;
         angular.element('#step3').addClass('active');
+
+        // Init video playback
+
+        $scope.videoConfig = {
+            sources: [
+                {src: $sce.trustAsResourceUrl("http://static.videogular.com/assets/videos/videogular.mp4"), type: "video/mp4"}
+            ],
+            tracks: [],
+            theme: "../bower_components/videogular-themes-default/videogular.css",
+            // plugins: {
+            //     poster: "http://www.videogular.com/assets/images/videogular.png"
+            // }
+        }
 
         // Variable to indicate wether to add an existing or a new overlay
         $scope.existingOverlay = false;
@@ -148,6 +159,8 @@ app.controller("scenarioCreateNewController", function ($scope, $scenarioService
 
     }
     $scope.videoDebug();
+
+
 
 
 });

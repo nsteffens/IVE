@@ -238,8 +238,11 @@
 
     <!--Video preview-->
     <div class="col-md-6">
-        Video Preview
-        <div style="background-color: black; width:400px; height:200px;"></div>
+        <div class="video-container">
+            <videogular vg-theme="videoConfig.theme" vg-responsive="true">
+                <vg-media vg-src="videoConfig.sources" vg-tracks="videoConfig.tracks" vg-native-controls="true"></vg-media>
+            </videogular>
+        </div>
     </div>
 
 

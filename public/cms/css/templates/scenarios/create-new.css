@@ -142,3 +142,10 @@ main {
 .newOverlay {
     padding: 1em 1em;
 }
+
+.video-container {
+    /*width: 200px;*/
+    height: 320px;
+    margin: 1em auto;
+
+}
