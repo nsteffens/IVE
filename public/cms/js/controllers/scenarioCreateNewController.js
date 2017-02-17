@@ -1,6 +1,6 @@
 var app = angular.module("ive_cms");
 
-app.controller("scenarioCreateNewController", function ($scope, $scenarioService, $videoService, $location, $document) {
+app.controller("scenarioCreateNewController", function ($scope, $scenarioService, $videoService, $location, $document, Upload) {
 
     $scope.currentState = {
         general: true,

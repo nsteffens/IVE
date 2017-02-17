@@ -9,6 +9,7 @@ var app = angular.module("ive_cms", [
     // "pascalprecht.translate",
     "angular-momentjs",
     "ui-leaflet",
+    "ngFileUpload",
 
     // Own Modules
     "routes",
