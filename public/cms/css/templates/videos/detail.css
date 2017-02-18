@@ -1,0 +1,9 @@
+.btn-group.float-right {
+    padding-bottom: 1em;
+}
+
+.video-container {
+    margin: 0 auto;
+    height: 50%;
+    width: 60%;
+}

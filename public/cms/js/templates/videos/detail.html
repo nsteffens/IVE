@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+
+<h2>Detail View: {{video.name}} Video</h2>
+
+<div class="row">
+
+    <div class="col-md-6">
+        <leaflet id="videoDetailMap" defaults="defaults" width="100%" height="30%"></leaflet>
+    </div>
+
+    <div class="col-md-6">
+
+        <div class="btn-group float-right" role="group" aria-label="ButtonBar">
+            <button ng-click="redirect('/videos')" type="button" class="btn btn-secondary">
+                    <i class="fa fa-caret-left" aria-hidden="true"></i> Back
+                </button>
+            <button ng-click="" type="button" class="btn btn-secondary">
+                    <i class="fa fa-pencil-square-o" aria-hidden="true"></i> Edit
+                </button>
+        </div>
+        <div class="form-group row">
+            <label for="name-input" class="col-2 col-form-label">Name:</label>
+            <div class="col-10">
+                <input class="form-control" type="text" ng-model="" placeholder="{{video.name}}" id="name-input" disabled>
+            </div>
+        </div>
+        <div class="form-group row">
+            <label for="desc-input" class="col-2 col-form-label">Description:</label>
+            <div class="col-10">
+                <input class="form-control" type="text" ng-model="" placeholder="{{video.description}}" id="desc-input" disabled>
+            </div>
+        </div>
+        <div class="form-group row">
+            <label for="tags-input" class="col-2 col-form-label">Tags:</label>
+            <div class="col-10">
+                <input class="form-control" type="text" ng-model="" placeholder="{{video.tags | join:', '}}" id="tags-input" disabled>
+            </div>
+        </div>
+        <div class="form-group row">
+            <label for="created-input" class="col-2 col-form-label">Created:</label>
+            <div class="col-10">
+                <input class="form-control" type="date" ng-model="" placeholder="{{video.created | timestamp}}" id="created-input" disabled>
+            </div>
+        </div>
+
+    </div>
+</div>
+<!--End head area-->
+
+<hr>
+<br>
+
+
+<div class="row">
+    <div class="video-container">
+        <videogular vg-theme="videoConfig.theme" vg-responsive="true">
+            <vg-media vg-src="videoConfig.sources" vg-tracks="videoConfig.tracks" vg-native-controls="true"></vg-media>
+        </videogular>
+    </div>
+</div>

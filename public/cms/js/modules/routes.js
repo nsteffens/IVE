@@ -59,6 +59,16 @@ app.config(function ($routeProvider, $locationProvider, config) {
             controller: "videoOverviewController",
             css: "css/templates/videos/overview.css"
         })
+        .when("/videos/create-new", {
+            templateUrl: "js/templates/videos/create-new.html",
+            controller: "videoCreateNewController",
+            css: "css/templates/videos/create-new.css"
+        })
+        .when("/videos/:video_id", {
+            templateUrl: "js/templates/videos/detail.html",
+            controller: "videoDetailController",
+            css: "css/templates/videos/detail.css"
+        })
 
         // Redirect to home page
         .otherwise({

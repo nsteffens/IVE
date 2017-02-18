@@ -17,6 +17,10 @@ app.controller("videoOverviewController", function ($scope, $videoService, $loca
             // console.log(response);
 
             console.log($scope.videos);
+
+
+            // TODO: Include Moment here and format the dates...
+            // console.log($moment().format($scope.videos[0].created));
         })
 
     /**

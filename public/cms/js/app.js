@@ -20,7 +20,7 @@ var app = angular.module("ive_cms", [
     // Own Modules
     "routes",
     // "languages",
-    // "filters",
+    "filters",
 
     // Services
 
