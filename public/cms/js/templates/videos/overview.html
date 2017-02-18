@@ -27,7 +27,7 @@
 <div class="row" ng-show="portraitView">
     <div ng-repeat="video in videos" class="col-md-4 video">
         <p>{{video.name}}</p>
-        <img src="http://lorempixel.com/300/169"></br>
+        <img width="300px" height="169px" src="/videos/thumbnail.png"></br>
         <i class="fa fa-tags" aria-hidden="true"></i><span class="tag" ng-repeat="tag in video.tags">{{tag}}</span></br>
         <a href="" ng-click="redirect('/videos/'+ video.video_id)"><i class="fa fa-pencil-square-o" aria-hidden="true"></i></a>
         <a href="" ng-click=""><i class="fa fa-trash-o" aria-hidden="true"></i></a></br>

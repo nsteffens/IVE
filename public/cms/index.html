@@ -114,8 +114,8 @@
 					</li>
 					<li ng-show="isActive('/videos')" class="nav-item nav-subitem">
 						<ul>
-							<li class="nav-sublink"><span>Overview</span></li>
-							<li class="nav-sublink"><span>Create new</span></li>
+							<li class="nav-sublink"><span ng-click="redirect('/videos')">Overview</span></li>
+							<li class="nav-sublink"><span ng-click="redirect('/videos/create-new')">Create new</span></li>
 						</ul>
 					</li>
 					<li class="nav-item">
@@ -183,6 +183,8 @@
 	<script src="js/controllers/scenarioCreateNewController.js"></script>
 	<script src="js/controllers/videoOverviewController.js"></script>
 	<script src="js/controllers/videoDetailController.js"></script>
+	<script src="js/controllers/videoCreateNewController.js"></script>
+
 </body>
 
 </html>
