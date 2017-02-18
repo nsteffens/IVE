@@ -10,36 +10,53 @@
 
     <div class="col-md-6">
 
-        <div class="btn-group float-right" role="group" aria-label="ButtonBar">
+        <div class="btn-group float-right" role="group" aria-label="ButtonBar" ng-hide="editMode">
             <button ng-click="redirect('/videos')" type="button" class="btn btn-secondary">
                     <i class="fa fa-caret-left" aria-hidden="true"></i> Back
                 </button>
-            <button ng-click="" type="button" class="btn btn-secondary">
+            <button ng-click="editVideo()" type="button" class="btn btn-secondary">
                     <i class="fa fa-pencil-square-o" aria-hidden="true"></i> Edit
                 </button>
         </div>
-        <div class="form-group row">
-            <label for="name-input" class="col-2 col-form-label">Name:</label>
-            <div class="col-10">
-                <input class="form-control" type="text" ng-model="" placeholder="{{video.name}}" id="name-input" disabled>
-            </div>
+
+        <div class="btn-group float-right" role="group" aria-label="ButtonBar" ng-show="editMode">
+            <button ng-click="editMode = false" type="button" class="btn btn-secondary">
+                    <i class="fa fa-caret-left" aria-hidden="true"></i> Back
+                </button>
+            <button ng-click="deleteVideo()" type="button" class="btn btn-danger">
+                    <i class="fa fa-trash-o" aria-hidden="true"></i> Delete
+                </button>
+            <button ng-click="saveVideo()" type="button" class="btn btn-primary">
+                    <i class="fa fa-floppy-o" aria-hidden="true"></i> Save
+                </button>
         </div>
-        <div class="form-group row">
-            <label for="desc-input" class="col-2 col-form-label">Description:</label>
-            <div class="col-10">
-                <input class="form-control" type="text" ng-model="" placeholder="{{video.description}}" id="desc-input" disabled>
+
+        <br>
+
+        <div class="inputFields">
+            <div class="form-group row">
+                <label for="name-input" class="col-2 col-form-label">Name:</label>
+                <div class="col-10">
+                    <input class="form-control" type="text" ng-model="video.name" id="name-input" disabled>
+                </div>
             </div>
-        </div>
-        <div class="form-group row">
-            <label for="tags-input" class="col-2 col-form-label">Tags:</label>
-            <div class="col-10">
-                <input class="form-control" type="text" ng-model="" placeholder="{{video.tags | join:', '}}" id="tags-input" disabled>
+            <div class="form-group row">
+                <label for="desc-input" class="col-2 col-form-label">Description:</label>
+                <div class="col-10">
+                    <input class="form-control" type="text" ng-model="video.description" id="desc-input" disabled>
+                </div>
             </div>
-        </div>
-        <div class="form-group row">
-            <label for="created-input" class="col-2 col-form-label">Created:</label>
-            <div class="col-10">
-                <input class="form-control" type="date" ng-model="" placeholder="{{video.created | timestamp}}" id="created-input" disabled>
+            <div class="form-group row">
+                <label for="tags-input" class="col-2 col-form-label">Tags:</label>
+                <div class="col-10">
+                    <input class="form-control" type="text" ng-model="video.tags" id="tags-input" disabled>
+                </div>
+            </div>
+            <div class="form-group row">
+                <label for="created-input" class="col-2 col-form-label">Recorded:</label>
+                <div class="col-10">
+                    <input class="form-control" type="string" ng-model="video.recorded" id="created-input" disabled>
+                </div>
             </div>
         </div>
 
