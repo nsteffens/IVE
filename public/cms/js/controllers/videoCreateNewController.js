@@ -9,7 +9,7 @@ app.controller("videoCreateNewController", function ($scope, $videoService, $loc
         description: "",
         tags: "",
         recorded: "",
-        location: { latitude: 0, longitude: 0 }
+        location: { name: "", description: "", lng: 0, lat: 0 }
     }
 
     // Input fields
@@ -22,16 +22,17 @@ app.controller("videoCreateNewController", function ($scope, $videoService, $loc
     var isValid = null;
 
     // Leaflet Map Init
-
+    var locations = [];
     var locationMarkers = [];
     var featureGroup;
     var location_id;
 
     $locationService.list().then(function onSuccess(response) {
-        console.log(response.data);
         response.data.forEach(function (location) {
             // Exclude indoor locations and those which are wrongly located at 0/0
             if (location.location_type != "indoor" && location.lat != 0 && location.lng != 0) {
+
+                locations.push(location);
                 var markerOptions = {
                     clickable: true
                 }
@@ -39,8 +40,11 @@ app.controller("videoCreateNewController", function ($scope, $videoService, $loc
                 var popupContent = `Location: ${location.name}`;
                 var marker = new L.Marker(L.latLng(location.lat, location.lng), markerOptions).bindPopup(popupContent);
                 marker.on('click', function (e) {
-                    $scope.newVideo.location.latitude = e.latlng.lat;
-                    $scope.newVideo.location.longitude = e.latlng.lng;
+                    $scope.newVideo.location.lat = e.latlng.lat;
+                    $scope.newVideo.location.lng = e.latlng.lng;
+                    $scope.newVideo.location.l_id = location.l_id;
+                    $scope.createLocation = false;
+
                 })
                 locationMarkers.push(marker);
             }
@@ -68,12 +72,16 @@ app.controller("videoCreateNewController", function ($scope, $videoService, $loc
             var ownMarker = new L.Marker(map.getCenter(), ownMarkerOptions);
 
             ownMarker.on('dragend', function (e) {
-                $scope.newVideo.location.latitude = e.target._latlng.lat;
-                $scope.newVideo.location.longitude = e.target._latlng.lng;
+                $scope.newVideo.location.lat = e.target._latlng.lat;
+                $scope.newVideo.location.lng = e.target._latlng.lng;
+                $scope.createLocation = true;
             })
 
+            var popupContent = 'Drag this marker to select a new Location!';
             ownMarker.addTo(map);
         })
+
+
 
 
     });
@@ -90,6 +98,64 @@ app.controller("videoCreateNewController", function ($scope, $videoService, $loc
             scrollWheelZoom: false
         }
     });
+
+
+    $scope.searchLocation = function () {
+
+        var searchTerm = $scope.searchTerm;
+
+        var SearchMarkers = [];
+
+        locations.forEach(function (location) {
+
+
+            if (searchTerm == "") {
+
+                var popupContent = `Location: ${location.name}`;
+                var marker = new L.Marker(L.latLng(location.lat, location.lng), { clickable: true }).bindPopup(popupContent);
+                marker.on('click', function (e) {
+                    $scope.newVideo.location.lat = e.latlng.lat;
+                    $scope.newVideo.location.lng = e.latlng.lng;
+                    $scope.newVideo.location.l_id = location.l_id;
+                    $scope.createLocation = false;
+
+                })
+
+                SearchMarkers.push(marker);
+
+            }
+
+            if (location.name.search(searchTerm) != -1) {
+
+                var popupContent = `Location: ${location.name}`;
+                var marker = new L.Marker(L.latLng(location.lat, location.lng), { clickable: true }).bindPopup(popupContent);
+                marker.on('click', function (e) {
+                    $scope.newVideo.location.lat = e.latlng.lat;
+                    $scope.newVideo.location.lng = e.latlng.lng;
+                    $scope.newVideo.location.l_id = location.l_id;
+                    $scope.createLocation = false;
+
+                })
+
+                SearchMarkers.push(marker)
+                console.log(location);
+            }
+        }, this);
+
+
+        leafletData.getMap('addNewVideoMap').then(function (map) {
+            // Clear the map
+            map.removeLayer(featureGroup);
+
+            featureGroup = L.featureGroup(SearchMarkers).addTo(map);
+
+        });
+
+
+
+
+
+    }
 
     $scope.submit = function () {
 
@@ -145,12 +211,16 @@ app.controller("videoCreateNewController", function ($scope, $videoService, $loc
             isValid = false;
         }
 
+        if ($scope.newVideo.location.lat == 0 || $scope.newVideo.location.lng == 0) {
+            isVaild = false;
+            alert("Please select a location!");
+        }
+
         // Check if file has been selected
         if (isValid && $scope.uploadingVideo != null) {
             $scope.upload();
         }
 
-        console.log($scope.uploadingVideo);
 
 
     }
@@ -170,9 +240,34 @@ app.controller("videoCreateNewController", function ($scope, $videoService, $loc
     // Accept Uploaded files and send them to the backend server
     // TODO: Think about how the videos are ordered on the fs --> create location
     // before the upload is initialised
+
+    // Bool to see if we need to create a new location
+    $scope.createLocation = false;
+    $scope.newLocation = {
+        name: "",
+        description: "",
+        location_type: "outdoor",
+        lng: null,
+        lat: null
+    }
     $scope.upload = function () {
-        // Placeholder for testing..
-        var location_id = 1;
+
+        // Check where to upload the file..
+        if ($scope.newVideo.location.l_id) {
+            location_id = $scope.newVideo.location.l_id;
+        } else {
+            // New Location needs to be created
+            $scope.newLocation.lng = $scope.newVideo.location.lng;
+            $scope.newLocation.lat = $scope.newVideo.location.lat;
+            
+
+            $locationService.create($scope.newLocation)
+            .then(function(response){
+                console.log(response);
+            });
+
+
+        }
 
         $scope.uploadStarted = true;
 
