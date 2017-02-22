@@ -9,8 +9,7 @@ var app = angular.module("ive_cms", [
     // "pascalprecht.translate",
     "angular-momentjs",
     "ui-leaflet",
-    "ngFileUpload",
-    
+
     // Videogular
     "com.2fdevs.videogular",
     "com.2fdevs.videogular.plugins.controls",
@@ -28,21 +27,23 @@ var app = angular.module("ive_cms", [
     "scenarioService",
     "locationService",
     "videoService",
-    "relationshipService"
+    "relationshipService",
+    "ngFileUpload"
+
 ]);
 
 /**
  * Log Provider
  * turn on/off debug logging
  */
-app.config(function($logProvider, config) {
+app.config(function ($logProvider, config) {
     $logProvider.debugEnabled(config.debugMode);
 });
 
 /**
  * Start application
  */
-app.run(function(/*$translate,*/ config) {
+app.run(function (/*$translate,*/ config) {
 
     // Use Translator and set Language
     //$translate.use(config.appLanguage);
