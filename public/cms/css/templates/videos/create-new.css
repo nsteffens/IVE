@@ -23,3 +23,7 @@ h1, h2, h3 {
 .col-center {
     margin: 0 auto;
 }
+
+.progress {
+    margin: 1em;
+}
