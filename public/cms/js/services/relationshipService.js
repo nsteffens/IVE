@@ -3,17 +3,17 @@ var app = angular.module("relationshipService", []);
 /**
  * Relationship Service Provider
  */
-app.factory('$relationshipService', function($http, config, $authenticationService) {
+app.factory('$relationshipService', function ($http, config, $authenticationService) {
 
     return {
-        init: function(relationship_type, label){
+        init: function (relationship_type, label) {
             var new_object;
-            switch (relationship_type){
+            switch (relationship_type) {
                 case 'belongs_to': {
                     new_object = {
                         scenario_id: null
                     };
-                    switch (label){
+                    switch (label) {
                         case 'location': {
                             new_object.location_id = null;
                             break;
@@ -72,7 +72,7 @@ app.factory('$relationshipService', function($http, config, $authenticationServi
             }
             return new_object;
         },
-        get_types: function() {
+        get_types: function () {
             return [
                 {
                     name: "belongs_to"
@@ -87,32 +87,41 @@ app.factory('$relationshipService', function($http, config, $authenticationServi
                 }
             ];
         },
-        list: function() {
+        list: function () {
             return $http.get(config.apiURL + "/relationships");
         },
-        list_by_type: function(relationship_type, label) {
-            if(label){
+        list_by_type: function (relationship_type, label) {
+            if (label) {
                 return $http.get(config.apiURL + "/relationship/" + relationship_type + "/" + label);
             } else {
                 return $http.get(config.apiURL + "/relationship/" + relationship_type);
             }
         },
-        retrieve_by_id: function(relationship_type, relationship_id, label) {
-            if(label){
+        retrieve_by_id: function (relationship_type, relationship_id, label) {
+            if (label) {
                 return $http.get(config.apiURL + "/relationship/" + relationship_type + "/" + relationship_id + "/" + label);
             } else {
                 return $http.get(config.apiURL + "/relationship/" + relationship_type + "/" + relationship_id);
             }
         },
-        create: function(relationship_type, label, data) {
-            return $http.post(config.apiURL + "/relationship/" + relationship_type + "/" + label, data, {
-                headers: {
-                    'Authorization': 'Bearer ' + $authenticationService.getToken(),
-                    'Content-Type': 'application/json'
-                }
-            });
+        create: function (relationship_type, data, label) {
+            if (label) {
+                return $http.post(config.apiURL + "/relationship/" + relationship_type + "/" + label, data, {
+                    headers: {
+                        'Authorization': 'Bearer ' + $authenticationService.getToken(),
+                        'Content-Type': 'application/json'
+                    }
+                });
+            } else {
+                return $http.post(config.apiURL + "/relationship/" + relationship_type, data, {
+                    headers: {
+                        'Authorization': 'Bearer ' + $authenticationService.getToken(),
+                        'Content-Type': 'application/json'
+                    }
+                });
+            }
         },
-        edit: function(relationship_type, relationship_id, label, data) {
+        edit: function (relationship_type, relationship_id, label, data) {
             return $http.put(config.apiURL + "/relationship/" + relationship_type + "/" + relationship_id + "/" + label, data, {
                 headers: {
                     'Authorization': 'Bearer ' + $authenticationService.getToken(),
@@ -120,7 +129,7 @@ app.factory('$relationshipService', function($http, config, $authenticationServi
                 }
             });
         },
-        remove: function(relationship_id) {
+        remove: function (relationship_id) {
             return $http.delete(config.apiURL + "/relationships/" + relationship_id, {
                 headers: {
                     'Authorization': 'Bearer ' + $authenticationService.getToken()

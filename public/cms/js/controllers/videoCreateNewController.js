@@ -1,6 +1,6 @@
 var app = angular.module("ive_cms");
 
-app.controller("videoCreateNewController", function ($scope, $videoService, $location, $locationService, $document, Upload, leafletData) {
+app.controller("videoCreateNewController", function ($scope, config, $location, $authenticationService, $videoService, $locationService, $relationshipService, $document, $window, Upload, leafletData) {
 
     $scope.file_selected = false;
 
@@ -26,6 +26,22 @@ app.controller("videoCreateNewController", function ($scope, $videoService, $loc
     var locationMarkers = [];
     var featureGroup;
     var location_id;
+    var location_name;
+
+
+    // Authenticate with the backend to get permissions to create content
+
+    $authenticationService.authenticate(config.backendLogin)
+        .then(function onSuccess(response) {
+            $authenticationService.set(response.data);
+
+            console.log(response);
+
+        })
+        .catch(function onError(response) {
+            $window.alert(response.data);
+        });
+
 
     $locationService.list().then(function onSuccess(response) {
         response.data.forEach(function (location) {
@@ -42,7 +58,10 @@ app.controller("videoCreateNewController", function ($scope, $videoService, $loc
                 marker.on('click', function (e) {
                     $scope.newVideo.location.lat = e.latlng.lat;
                     $scope.newVideo.location.lng = e.latlng.lng;
-                    $scope.newVideo.location.l_id = location.l_id;
+                    // $scope.newVideo.location.l_id = location.l_id;
+                    $scope.newVideo.location.name = location.name;
+
+                    $scope.newLocation = location;
                     $scope.createLocation = false;
 
                 })
@@ -72,6 +91,9 @@ app.controller("videoCreateNewController", function ($scope, $videoService, $loc
             var ownMarker = new L.Marker(map.getCenter(), ownMarkerOptions);
 
             ownMarker.on('dragend', function (e) {
+                //Clear to have a clean new location
+                $scope.newVideo.location = {};
+
                 $scope.newVideo.location.lat = e.target._latlng.lat;
                 $scope.newVideo.location.lng = e.target._latlng.lng;
                 $scope.createLocation = true;
@@ -116,7 +138,9 @@ app.controller("videoCreateNewController", function ($scope, $videoService, $loc
                 marker.on('click', function (e) {
                     $scope.newVideo.location.lat = e.latlng.lat;
                     $scope.newVideo.location.lng = e.latlng.lng;
-                    $scope.newVideo.location.l_id = location.l_id;
+                    // $scope.newVideo.location.l_id = location.l_id;
+                    $scope.newLocation = location;
+
                     $scope.createLocation = false;
 
                 })
@@ -132,7 +156,9 @@ app.controller("videoCreateNewController", function ($scope, $videoService, $loc
                 marker.on('click', function (e) {
                     $scope.newVideo.location.lat = e.latlng.lat;
                     $scope.newVideo.location.lng = e.latlng.lng;
-                    $scope.newVideo.location.l_id = location.l_id;
+                    // $scope.newVideo.location.l_id = location.l_id;
+                    $scope.newLocation = location;
+
                     $scope.createLocation = false;
 
                 })
@@ -230,8 +256,6 @@ app.controller("videoCreateNewController", function ($scope, $videoService, $loc
             $scope.file_selected = true;
         }
 
-        console.log(evt.type);
-
         if (evt.type == "cleared") {
             $scope.file_selected = false;
         }
@@ -243,29 +267,39 @@ app.controller("videoCreateNewController", function ($scope, $videoService, $loc
 
     // Bool to see if we need to create a new location
     $scope.createLocation = false;
+
     $scope.newLocation = {
         name: "",
         description: "",
         location_type: "outdoor",
         lng: null,
-        lat: null
+        lat: null,
     }
+
+
     $scope.upload = function () {
 
         // Check where to upload the file..
-        if ($scope.newVideo.location.l_id) {
-            location_id = $scope.newVideo.location.l_id;
+        // if ($scope.newVideo.location.l_id) {
+        if (!$scope.createLocation) {
+            // location_id = $scope.newVideo.location.l_id;
+            location_name = $scope.newVideo.location.name;
         } else {
             // New Location needs to be created
             $scope.newLocation.lng = $scope.newVideo.location.lng;
             $scope.newLocation.lat = $scope.newVideo.location.lat;
-            
 
+            $scope.createLocation = true;
             $locationService.create($scope.newLocation)
-            .then(function(response){
-                console.log(response);
-            });
+                .then(function (response) {
 
+                    if (response.status != 201) {
+                        $window.alert('It seems like the backend is not responding. Please try again later.');
+                        return;
+                    }
+
+                    $scope.newLocation = response.data;
+                });
 
         }
 
@@ -280,13 +314,22 @@ app.controller("videoCreateNewController", function ($scope, $videoService, $loc
             total: 0
         }
 
+        var uploadVideoData = {
+            file: $scope.uploadingVideo
+        }
+
+        if ($scope.createLocation) {
+            uploadVideoData.location = { newLocation: $scope.newLocation, newVideo: $scope.newVideo }
+        } else {
+            uploadVideoData.location = { existing_id: location_id, existing_name: location_name, newVideo: $scope.newVideo }
+        }
+
         Upload.upload({
             url: '/cms/videos/upload',
-            data: { file: $scope.uploadingVideo, 'location_id': location_id }
+            data: uploadVideoData
         })
             .progress(function (evt) {
                 var progressPercentage = parseInt(100.0 * evt.loaded / evt.total);
-                // console.log(evt);
 
                 $scope.uploadStatus.currentPercentage = progressPercentage;
                 $scope.uploadStatus.loaded = evt.loaded;
@@ -295,7 +338,41 @@ app.controller("videoCreateNewController", function ($scope, $videoService, $loc
                 angular.element('.progress-bar').attr('aria-valuenow', progressPercentage).css('width', progressPercentage + '%');
             })
             .success(function (data, status, headers, config) {
-                console.log('file ' + config._file.name + 'uploaded. Response: ' + data);
+
+                $videoService.create({
+                    name: $scope.newVideo.name,
+                    description: $scope.newVideo.description,
+                    url: data.url.split('/public/')[1],
+                    recorded: $scope.newVideo.recorded
+                }).then(function (response) {
+
+                    if (response.status != 201) {
+                        $window.alert('It seems like the backend is not responding. Please try again later.');
+                        return;
+                    }
+
+                    // Create relationship between location and the new video
+                    console.log('Creation done?');
+                    console.log(response);
+                    console.log($scope.newLocation);
+
+                    var recorded_at = {
+                        video_id: response.data.video_id,
+                        location_id: $scope.newLocation.location_id,
+                        preferred: false    //What does this parameter do?
+                    }
+
+                    $relationshipService.create('recorded_at', recorded_at).then(function (response) {
+                        console.log('Relationship created?')
+                        console.log(response);
+
+                    })
+
+                })
+
+
+
+                //console.log('file ' + config._file.name + 'uploaded. Response: ' + data);
             })
             .error(function (data, status, headers, config) {
                 console.log('error status: ' + status);

@@ -16,5 +16,9 @@ app.constant("config", {
     appYear: moment().format("YYYY"),
     apiURL: "/api",
     debugMode: true,
-    html5Mode: true
+    html5Mode: true,
+    backendLogin: {
+        username: 'admin',
+        password: 'admin'
+    }
 });
