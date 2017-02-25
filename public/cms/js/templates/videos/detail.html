@@ -5,7 +5,7 @@
 <div class="row">
 
     <div class="col-md-6">
-        <leaflet id="videoDetailMap" defaults="defaults" width="100%" height="30%"></leaflet>
+        <leaflet id="videoDetailMap" defaults="defaults" width="100%" height="35%"></leaflet>
     </div>
 
     <div class="col-md-6">
@@ -65,13 +65,13 @@
 <!--End head area-->
 
 <hr>
-<br>
-
 
 <div class="row">
     <div class="video-container">
         <videogular vg-theme="videoConfig.theme" vg-responsive="true">
             <vg-media vg-src="videoConfig.sources" vg-tracks="videoConfig.tracks" vg-native-controls="true"></vg-media>
+            <vg-overlay-play></vg-overlay-play>
+            <vg-poster vg-url='videoConfig.plugins.poster'></vg-poster>
         </videogular>
     </div>
 </div>

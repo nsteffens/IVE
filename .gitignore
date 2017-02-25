@@ -1,7 +1,7 @@
 node_modules
 public/bower_components
 public/images/*
-public/videos/*
+public/videos
 .DS_Store
 yarn.lock
 _site

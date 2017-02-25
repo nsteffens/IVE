@@ -35,7 +35,7 @@ app.controller("videoCreateNewController", function ($scope, config, $location, 
         .then(function onSuccess(response) {
             $authenticationService.set(response.data);
 
-            console.log(response);
+            // console.log(response);
 
         })
         .catch(function onError(response) {
@@ -169,7 +169,7 @@ app.controller("videoCreateNewController", function ($scope, config, $location, 
                 })
 
                 SearchMarkers.push(marker)
-                console.log(location);
+                // console.log(location);
             }
         }, this);
 
@@ -344,35 +344,33 @@ app.controller("videoCreateNewController", function ($scope, config, $location, 
                 angular.element('.progress-bar').attr('aria-valuenow', progressPercentage).css('width', progressPercentage + '%');
             })
             .success(function (data, status, headers, config) {
-
-                console.log(data);
+                console.log("Upload finished! Creating Thumbnail now...");
+                // console.log(data);
 
                 $videoService.create({
                     name: $scope.newVideo.name,
                     description: $scope.newVideo.description,
-                    url: data.url.split('/public/')[1],
+                    url: '/' + data.url.split('/public/')[1],
                     recorded: $scope.newVideo.recorded
-                }).then(function (response) {
+                }).then(function (createdVideo) {
 
-                    if (response.status != 201) {
+                    if (createdVideo.status != 201) {
                         $window.alert('It seems like the backend is not responding. Please try again later.');
                         return;
                     }
 
                     // Create relationship between location and the new video
-                    console.log('Creation done?');
-                    console.log(response);
-                    console.log($scope.newLocation);
-
                     var recorded_at = {
-                        video_id: response.data.video_id,
+                        video_id: createdVideo.data.video_id,
                         location_id: $scope.newLocation.location_id,
                         preferred: false    //What does this parameter do?
                     }
 
-                    $relationshipService.create('recorded_at', recorded_at).then(function (response) {
-                        console.log('Relationship created?')
-                        console.log(response);
+                    $relationshipService.create('recorded_at', recorded_at).then(function (createdRelation) {
+                        if (createdVideo.status == 201) {
+                            // console.log('/videos/' + createdVideo);
+                            $scope.redirect('/videos/' + createdVideo.data.video_id);
+                        }
 
                     })
 
