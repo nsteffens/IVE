@@ -8,7 +8,7 @@
         <p> General information and file upload </p>
         <hr>
         <div ngf-drop ngf-select ng-model="uploadingVideo" class="upload-box" ngf-drag-over-class="'dragover'" ngf-multiple="false"
-            ngf-allow-dir="false" accept="video/*," ngf-pattern="'video/*'" ngf-change="upload_change($event)">
+            ngf-allow-dir="false" ngf-accept="'video/*, video/mp4'" ngf-pattern="'video/*, video/mp4'" ngf-change="upload_change($event)">
             <p ng-hide="file_selected">Drop your video file here or click to upload</p>
             <div ng-show="file_selected">
 

@@ -28,7 +28,10 @@ router.post('/cms/videos/upload', multipartyMiddleware, function (req, res) {
     var newPath = __dirname + '/../public/videos/'; // Needs to be further specified when it's clear if it's an existing or a new location
 
     // When it's an exisiting location
-    if (req.body.location.existing_id != null) {
+    if (req.body.location.existing_name != null) {
+        console.log(req.body);
+        console.log('existing');
+
 
         newPath += req.body.location.existing_name + '/' + req.body.location.newVideo.name + '.' + fileExtension;
 
@@ -45,7 +48,10 @@ router.post('/cms/videos/upload', multipartyMiddleware, function (req, res) {
         })
         // Now the case that a new location has been created  
     } else {
-        newPath += req.body.location.existing_name + '/' + req.body.location.newVideo + '.' + fileExtension;
+        console.log(req.body);
+        console.log('new');
+
+        newPath += req.body.location.newLocation.name + '/' + req.body.location.newVideo.name + '.' + fileExtension;
 
         mv(oldPath, newPath, { mkdirp: true }, function (err) {
             if (err) {

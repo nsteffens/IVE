@@ -61,6 +61,8 @@ app.controller("videoCreateNewController", function ($scope, config, $location, 
                     // $scope.newVideo.location.l_id = location.l_id;
                     $scope.newVideo.location.name = location.name;
 
+                    location_id = location.location_id;
+
                     $scope.newLocation = location;
                     $scope.createLocation = false;
 
@@ -141,6 +143,8 @@ app.controller("videoCreateNewController", function ($scope, config, $location, 
                     // $scope.newVideo.location.l_id = location.l_id;
                     $scope.newLocation = location;
 
+                    location_id = location.location_id;
+
                     $scope.createLocation = false;
 
                 })
@@ -158,6 +162,7 @@ app.controller("videoCreateNewController", function ($scope, config, $location, 
                     $scope.newVideo.location.lng = e.latlng.lng;
                     // $scope.newVideo.location.l_id = location.l_id;
                     $scope.newLocation = location;
+                    location_id = location.location_id;
 
                     $scope.createLocation = false;
 
@@ -321,9 +326,10 @@ app.controller("videoCreateNewController", function ($scope, config, $location, 
         if ($scope.createLocation) {
             uploadVideoData.location = { newLocation: $scope.newLocation, newVideo: $scope.newVideo }
         } else {
-            uploadVideoData.location = { existing_id: location_id, existing_name: location_name, newVideo: $scope.newVideo }
+            uploadVideoData.location = { existing_name: location_name, newVideo: $scope.newVideo }
         }
 
+        console.log(uploadVideoData);
         Upload.upload({
             url: '/cms/videos/upload',
             data: uploadVideoData
@@ -338,6 +344,8 @@ app.controller("videoCreateNewController", function ($scope, config, $location, 
                 angular.element('.progress-bar').attr('aria-valuenow', progressPercentage).css('width', progressPercentage + '%');
             })
             .success(function (data, status, headers, config) {
+
+                console.log(data);
 
                 $videoService.create({
                     name: $scope.newVideo.name,
