@@ -34,9 +34,6 @@ app.controller("videoCreateNewController", function ($scope, config, $location, 
     $authenticationService.authenticate(config.backendLogin)
         .then(function onSuccess(response) {
             $authenticationService.set(response.data);
-
-            // console.log(response);
-
         })
         .catch(function onError(response) {
             $window.alert(response.data);

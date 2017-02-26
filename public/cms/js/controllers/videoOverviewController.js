@@ -1,10 +1,20 @@
 var app = angular.module("ive_cms");
 
-app.controller("videoOverviewController", function ($scope, $videoService, $location) {
+app.controller("videoOverviewController", function ($scope, $window, config, $videoService, $location, $authenticationService, $relationshipService) {
 
     // $scope.active = "scenarios";
     $scope.subsite = "overview";
     $scope.portraitView = true;
+
+    // Authenticate with the backend to get permissions to delete content
+
+    $authenticationService.authenticate(config.backendLogin)
+        .then(function onSuccess(response) {
+            $authenticationService.set(response.data);
+        })
+        .catch(function onError(response) {
+            $window.alert(response.data);
+        });
 
 
     $videoService.list()
@@ -28,5 +38,39 @@ app.controller("videoOverviewController", function ($scope, $videoService, $loca
     $scope.redirect = function (path) {
         $location.url(path);
     };
-    
+
+    $scope.deleteVideo = function (video_id) {
+
+        if ($window.confirm(`You are going to delete the Video. Are you sure? THIS WILL NOT BE REVERSIBLE!`)) {
+            if ($window.confirm('Are you really, really sure?')) {
+
+                $videoService.remove(video_id).then(function(response){
+                    console.log('Video removed');
+                });
+                // Delete the video from the videos array
+                $scope.videos.forEach(function (video, index) {
+
+                    if (video.video_id == video_id) {
+                        console.log(index);
+                        $scope.videos.splice(index, 1);
+                        console.log($scope.videos);
+                    }
+
+                }, this);
+
+                // Delete relation to location
+                $relationshipService.list_by_type('recorded_at').then(function (relations) {
+                    relations.data.forEach(function (relation) {
+                        if (relation.video_id == video_id) {
+                            $relationshipService.remove(relation.relationship_id);
+                        }
+                    }, this);
+                })
+
+            }
+        }
+
+    }
+
+
 });
