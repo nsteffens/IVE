@@ -64,8 +64,8 @@
                     <td>{{video.created | timestamp}}</td>
                     <td>{{video.updated | timestamp}}</td>
                     <td>{{video.recorded | timestamp}}</td>
-                    <td><a ng-click="redirect('/videos/'+ video.video_id)"><i class="fa fa-pencil-square-o" aria-hidden="true"></i></a>
-                        <a ng-click="deleteVideo(video.video_id)"><i class="fa fa-trash-o" aria-hidden="true"></i></td></a>
+                    <td><a href="" ng-click="redirect('/videos/'+ video.video_id)"><i class="fa fa-pencil-square-o" aria-hidden="true"></i></a>
+                        <a href="" ng-click="deleteVideo(video.video_id)"><i class="fa fa-trash-o" aria-hidden="true"></i></td></a>
                 </tr>
             </tbody>
         </table>

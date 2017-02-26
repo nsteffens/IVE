@@ -178,11 +178,6 @@ app.controller("videoCreateNewController", function ($scope, config, $location, 
             featureGroup = L.featureGroup(SearchMarkers).addTo(map);
 
         });
-
-
-
-
-
     }
 
     $scope.submit = function () {

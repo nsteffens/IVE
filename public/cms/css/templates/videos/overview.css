@@ -45,3 +45,7 @@ div.input-group.searchbar {
     color: #fcfff5;
     background-color: #193441
 }
+
+td > a:hover {
+        text-shadow: 0 0 5px #193441;
+}
