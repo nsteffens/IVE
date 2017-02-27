@@ -27,7 +27,10 @@ var app = angular.module("ive_cms", [
     "scenarioService",
     "locationService",
     "videoService",
+    "overlayService",
     "relationshipService",
+
+    // Upload framework
     "ngFileUpload"
 
 ]);
