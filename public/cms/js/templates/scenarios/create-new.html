@@ -136,7 +136,7 @@
             <div class="form-group row">
                 <label for="video_recorded-input" class="col-2 col-form-label">Recorded:</label>
                 <div class="col-10">
-                    <input class="form-control" type="date" ng-model="newVideo.recorded" placeholder="01-01-2017" id="video_recorded-input">
+                    <input class="form-control" type="date" ng-model="newVideo.recorded" placeholder="YYYY-MM-DD" id="video_recorded-input">
                 </div>
             </div>
             <button type="button" class="btn btn-secondary float-left" ng-click="cancel('addVideo')"><i class="fa fa-caret-left" aria-hidden="true"></i> Cancel</button>
@@ -175,14 +175,14 @@
                     <div class="form-group row">
                         <label for="name-input" class="col-2 col-form-label">Name:</label>
                         <div class="col-10">
-                            <input class="form-control" type="text" ng-model="newLocation.name" placeholder="e.g. 'Münster Domplatz'" id="name-input-location">
+                            <input class="form-control" type="text" ng-model="newVideo.location.name" placeholder="e.g. 'Münster Domplatz'" id="name-input-location">
                         </div>
                     </div>  
             
                     <div class="form-group row">
                         <label for="desc-input" class="col-2 col-form-label">Description:</label>
                         <div class="col-10">
-                            <input class="form-control" type="text" ng-model="newLocation.description" placeholder="e.g. 'A place near the dom'"
+                            <input class="form-control" type="text" ng-model="newVideo.location.description" placeholder="e.g. 'A place near the dom'"
                                 id="desc-input">
                         </div>
                     </div>
@@ -205,7 +205,7 @@
                         </span>
             </div>
             <button type="button" class="btn btn-secondary float-left" ng-click="cancel('addVideo')"><i class="fa fa-caret-left" aria-hidden="true"></i> Cancel</button>
-            <button type="button" class="btn btn-secondary float-right" ng-click="">Add Video <i class="fa fa-caret-right" aria-hidden="true"></i></button>
+            <button type="button" class="btn btn-secondary float-right" ng-click="submitVideo()">Add Video <i class="fa fa-caret-right" aria-hidden="true"></i></button>
         </div>
     </div>
 </div>

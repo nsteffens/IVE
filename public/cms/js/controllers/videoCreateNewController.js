@@ -297,7 +297,6 @@ app.controller("videoCreateNewController", function ($scope, config, $location, 
 
                     $scope.newLocation = response.data;
                 });
-
         }
 
         $scope.uploadStarted = true;
