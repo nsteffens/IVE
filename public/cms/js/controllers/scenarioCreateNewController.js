@@ -490,6 +490,72 @@ app.controller("scenarioCreateNewController", function ($scope, config, $authent
                 var popupContent = 'Drag this marker to select a new Location!';
                 ownMarker.addTo(map);
             })
+
+            /**
+             * Search Function for the locations
+             */
+
+            $scope.searchLocation = function () {
+
+                var searchLocationMarkers = [];
+                response.data.forEach(function (location) {
+
+                    if ($scope.searchLocationTerm == "") {
+                        if (location.location_type != "indoor" && location.lat != 0 && location.lng != 0) {
+
+                            var markerOptions = {
+                                clickable: true
+                            }
+
+                            var popupContent = `Location: ${location.name}`;
+                            var marker = new L.Marker(L.latLng(location.lat, location.lng), markerOptions).bindPopup(popupContent);
+                            marker.on('click', function (e) {
+                                $scope.newVideo.location.lat = e.latlng.lat;
+                                $scope.newVideo.location.lng = e.latlng.lng;
+                                $scope.newVideo.location.name = location.name;
+
+                                $scope.newVideo.location.location_id = location.location_id;
+                                $scope.existingLocation = true;
+
+                            })
+                            searchLocationMarkers.push(marker);
+                        }
+
+                    }
+
+                    if (location.name.search($scope.searchLocationTerm) != -1) {
+
+                        var popupContent = `Location: ${location.name}`;
+                        var marker = new L.Marker(L.latLng(location.lat, location.lng), { clickable: true }).bindPopup(popupContent);
+                        marker.on('click', function (e) {
+                            $scope.newVideo.location.lat = e.latlng.lat;
+                            $scope.newVideo.location.lng = e.latlng.lng;
+                            $scope.newVideo.location.name = location.name;
+                            $scope.newVideo.location.location_id = location.location_id;
+                            $scope.existingLocation = true;
+                        })
+
+                        searchLocationMarkers.push(marker);
+                    }
+
+                }, this);
+
+                // Clear map and add new featureGroup with searchResults
+
+                console.log(searchLocationMarkers);
+
+                leafletData.getMap('addNewVideoMap').then(function (map) {
+
+                    map.removeLayer($scope.featureGroup);
+                    $scope.featureGroup = L.featureGroup(searchLocationMarkers).addTo(map);
+                    map.fitBounds($scope.featureGroup.getBounds(), { animate: false, padding: L.point(50, 50) });
+
+                })
+
+
+            }
+
+
         });
     }
 
@@ -498,50 +564,44 @@ app.controller("scenarioCreateNewController", function ($scope, config, $authent
         var videoMarkers = [];
 
         $videoService.list().then(function (videos) {
-            console.log(videos);
             // Get recorded_At relations
             $relationshipService.list_by_type('recorded_at').then(function (relations) {
-                console.log(relations);
-
 
                 // create markers from recorded at relation when video.video_id relation.video_id matches
                 videos.data.forEach(function (video, video_index) {
 
                     relations.data.forEach(function (relation) {
-
                         if (video.video_id == relation.video_id) {
 
-                            var myIcon = new L.Icon({
-                                iconUrl: 'images/customMarker.png',
-                                iconRetinaUrl: 'images/customMarker@2x.png',
-                                iconSize: [25, 41],
-                                iconAnchor: [12, 41]
-                            })
+                            // We dont want to display indoor locations
+                            if (relation.location_type == "outdoor") {
 
+                                var myIcon = new L.Icon({
+                                    iconUrl: 'images/videomarker.png',
+                                    iconRetinaUrl: 'images/videomarker@2x.png',
+                                    iconSize: [25, 41],
+                                    iconAnchor: [12, 41]
+                                })
 
-                            var popupContent = `Video: ${relation.video_name} <br> Description: ${relation.video_description} `;
-                            var marker = new L.Marker(L.latLng(relation.location_lat, relation.location_lng), { clickable: true, icon: myIcon }).bindPopup(popupContent);
+                                var popupContent = `Video Name:: ${relation.video_name} <br> Description: ${relation.video_description} `;
+                                var marker = new L.Marker(L.latLng(relation.location_lat, relation.location_lng), { clickable: true, icon: myIcon }).bindPopup(popupContent);
 
-                            marker.on('click', function (e) {
-                                // Select existing video
-                                console.log('Clicked Video!');
-                                console.log(video.name);
+                                marker.on('click', function (e) {
+                                    // Select existing video
+                                    // TODO Write function for onclick
+                                    console.log('Clicked Video!');
+                                    console.log(video.name);
 
-                            })
+                                })
 
-                            videoMarkers.push(marker);
+                                videoMarkers.push(marker);
 
-                            console.log(videos.data.length);
+                            }
+
                             if (video_index == videos.data.length - 1) {
                                 leafletData.getMap('addExistingVideoMap').then(function (map) {
-
-                                    console.log(videoMarkers);
                                     $scope.featureGroup = new L.featureGroup(videoMarkers).addTo(map);
-
-                                    console.log($scope.featureGroup);
-
                                     map.fitBounds($scope.featureGroup.getBounds(), { animate: false, padding: L.point(50, 50) });
-
                                 })
                             }
                         }
@@ -551,6 +611,84 @@ app.controller("scenarioCreateNewController", function ($scope, config, $authent
 
                 }, this);
 
+
+                /**
+                 * Function to search the videos
+                 */
+
+                $scope.searchVideo = function () {
+
+                    var searchVideoMarkers = [];
+
+                    relations.data.forEach(function (relation) {
+
+                        // Add all if the term is empty
+                        if ($scope.searchVideoTerm == "") {
+                            if (relation.location_type != "indoor" && relation.location_lat != 0 && relation.location_lng != 0) {
+
+                                var myIcon = new L.Icon({
+                                    iconUrl: 'images/videomarker.png',
+                                    iconRetinaUrl: 'images/videomarker@2x.png',
+                                    iconSize: [25, 41],
+                                    iconAnchor: [12, 41]
+                                })
+
+                                var popupContent = `Selected Video: <br> Video Name: ${relation.video_name} <br> Description: ${relation.video_description} `;
+                                var marker = new L.Marker(L.latLng(relation.location_lat, relation.location_lng), { clickable: true, icon: myIcon }).bindPopup(popupContent);
+                                marker.on('click', function (e) {
+
+                                    // TODO: Add Video to scenario, prepare for submitVideo()
+                                    $scope.newVideo.location.lat = e.latlng.lat;
+                                    $scope.newVideo.location.lng = e.latlng.lng;
+                                    $scope.newVideo.location.name = location.name;
+
+                                    $scope.newVideo.location.location_id = location.location_id;
+                                    $scope.existingLocation = true;
+
+                                })
+                                searchVideoMarkers.push(marker);
+                            }
+
+                        }
+
+                        // add matches
+                        if (relation.video_name.search($scope.searchVideoTerm) != -1) {
+
+                            var myIcon = new L.Icon({
+                                iconUrl: 'images/videomarker.png',
+                                iconRetinaUrl: 'images/videomarker@2x.png',
+                                iconSize: [25, 41],
+                                iconAnchor: [12, 41]
+                            })
+
+                            var popupContent = `Selected Video: <br> Video Name: ${relation.video_name} <br> Description: ${relation.video_description} `;
+                            var marker = new L.Marker(L.latLng(relation.location_lat, relation.location_lng), { clickable: true, icon: myIcon }).bindPopup(popupContent);
+                            marker.on('click', function (e) {
+
+                                // TODO: Add Video to scenario, prepare for submitVideo()
+
+                                $scope.newVideo.location.lat = e.latlng.lat;
+                                $scope.newVideo.location.lng = e.latlng.lng;
+                                $scope.newVideo.location.name = location.name;
+                                $scope.newVideo.location.location_id = location.location_id;
+                                $scope.existingLocation = true;
+                            })
+
+                            searchVideoMarkers.push(marker);
+                        }
+
+                    }, this);
+
+                    // Clear map and add new featureGroup with searchResults
+                    leafletData.getMap('addExistingVideoMap').then(function (map) {
+
+                        map.removeLayer($scope.featureGroup);
+                        $scope.featureGroup = new L.featureGroup(searchVideoMarkers).addTo(map);
+                        map.fitBounds($scope.featureGroup.getBounds(), { animate: false, padding: L.point(50, 50) });
+                    })
+
+
+                }
 
 
             })
@@ -564,6 +702,10 @@ app.controller("scenarioCreateNewController", function ($scope, config, $authent
 
 
     }
+
+
+
+
 
     /**
      * 

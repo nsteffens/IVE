@@ -163,7 +163,7 @@
                 </div>
 
                 <div class="input-group" id="searchBar">
-                    <input type="text" class="form-control" ng-model="searchTerm" placeholder="Search for names...">
+                    <input type="text" class="form-control" ng-model="searchLocationTerm" placeholder="Search for names...">
                     <span class="input-group-btn">
                             <button class="btn btn-secondary" ng-click="searchLocation()" type="button">Go!</button>
                         </span>
@@ -199,12 +199,12 @@
         <div class="col-md-12">
             <leaflet id="addExistingVideoMap" defaults="defaults" width="100%" height="40%"></leaflet>
             <div class="input-group" id="searchBar">
-                <input type="text" class="form-control" placeholder="Search for existing Videos">
+                <input type="text" class="form-control" ng-model="searchVideoTerm" placeholder="Search for existing Videos">
                 <span class="input-group-btn">
-                            <button class="btn btn-secondary" type="button">Go!</button>
+                            <button class="btn btn-secondary" ng-click="searchVideo()" type="button">Go!</button>
                         </span>
             </div>
-            <button type="button" class="btn btn-secondary float-left" ng-click="cancel('AddVideo_Step2')"><i class="fa fa-caret-left" aria-hidden="true"></i> Cancel</button>
+            <button type="button" class="btn btn-secondary float-left" ng-click="cancel('addVideo')"><i class="fa fa-caret-left" aria-hidden="true"></i> Cancel</button>
             <button type="button" class="btn btn-secondary float-right" ng-click="">Add Video <i class="fa fa-caret-right" aria-hidden="true"></i></button>
         </div>
     </div>
