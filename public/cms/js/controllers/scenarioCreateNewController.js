@@ -69,7 +69,6 @@ app.controller("scenarioCreateNewController", function ($scope, config, $authent
 
     }
 
-
     // Function that triggers the addtion of a Video to the Scenario
     // Starts with a new Video Creation
     $scope.addVideo = function () {
@@ -99,15 +98,11 @@ app.controller("scenarioCreateNewController", function ($scope, config, $authent
 
     }
 
-
     // onAddVideo Pressed
     $scope.submitVideo = function () {
         console.log($scope.currentState);
         if ($scope.existingVideo) {
             // Existing video
-
-            // console.log('existingVideo');
-            // console.log($scope.newVideo);
 
             $scope.newScenario.videos.push($scope.newVideo);
 
@@ -118,47 +113,41 @@ app.controller("scenarioCreateNewController", function ($scope, config, $authent
             return;
         }
 
-        // if ($scope.validateVideo()) {
-        if (true) {
+        if ($scope.validateVideo()) {
+            // if (true) {
 
             // Now the case of a new video
 
-            if ($scope.existingLocation) {
-                console.log('new Video with existing loc');
-                console.log($scope.newVideo);
-                // No new location needs to be created
-
-                // Create relations + continue to upload
-
-                $scope.uploadVideo();
+            // if ($scope.existingLocation) {
+            //     // No new location needs to be created
+            //     // Create relations + continue to upload
+            //     $scope.uploadVideo();
 
 
 
-            } else {
+            // } else {
 
-                console.log('new video with new loc');
+            //     console.log('new video with new loc');
 
-                $scope.uploadVideo();
+            //     $scope.uploadVideo();
 
-                console.log($scope.newVideo);
-                // Create location here
-            }
+            //     console.log($scope.newVideo);
+            //     // Create location here
+            // }
 
 
             // Upload video here
             console.log('Lets go and upload something...');
-            // $scope.uploadStarted = false;   // set to true when the upload started...
-
-
-
-            // console.log($scope.newVideo);
+            $scope.uploadVideo();
         }
 
     }
 
-    // Function to init the upload
-    $scope.uploadVideo = function () {
+    /**
+     * Main Video Upload Function
+     */
 
+    $scope.uploadVideo = function () {
         var newLocation;
         $scope.uploadStarted = true;
         $scope.uploadStatus = {
@@ -268,9 +257,12 @@ app.controller("scenarioCreateNewController", function ($scope, config, $authent
 
     $scope.createOverlay = function () {
 
-        $scope.currentState.addVideo = false;
+        $scope.currentState.scenarioVideoOverview = false;
         $scope.currentState.createOverlay = true;
         angular.element('#step3').addClass('active');
+
+        $scope.currentVideoIndex = 0;
+        $scope.currentVideo = $scope.newScenario.videos[0];
 
         // Init video playback
 
@@ -287,29 +279,152 @@ app.controller("scenarioCreateNewController", function ($scope, config, $authent
 
         // Variable to indicate wether to add an existing or a new overlay
         $scope.existingOverlay = false;
+        $scope.existingOverlayId = null;
 
-        var newOverlay = {
+        $scope.newOverlay = {
             name: "",
             description: "",
             tags: [],
+            category: "",
             url: ""
         }
 
         console.log($scope.newScenario.videos);
 
+        $scope.searchOverlay = function () {
+
+            // console.log($scope.searchOverlayTerm);
+
+            $overlayService.list().then(function (response) {
+
+                var overlays = response.data;
+                $scope.overlaySearchResults = [];
+
+                if ($scope.searchOverlayTerm == "") {
+
+                    $scope.overlaySearchResults = [];
+
+                }
+                console.log(overlays);
+                overlays.forEach(function (overlay) {
+
+                    if (overlay.name.search($scope.searchOverlayTerm) != -1) {
+                        $scope.overlaySearchResults.push(overlay);
+                    }
+
+                }, this);
+
+            })
+
+        }
+
+        $scope.selectOverlay = function (overlay) {
+            $scope.selectedOverlay = overlay;
+        }
+
     }
 
-    $scope.placeOverlay = function () {
+    $scope.skipVideo = function () {
+        // Skip Video and dont attach a video for it
+        $scope.currentVideoIndex++;
 
-        $scope.currentState.createOverlay = false;
-        $scope.currentState.placeOverlay = true;
+    }
 
+    $scope.submitOverlay = function () {
+        var nextVideo = function () {
+            // Add an overlay to the video
+
+            if ($scope.existingOverlay) {
+                // Retrieve the existing overlay and attach it to the video
+                console.log('existing');
+
+                console.log($scope.selectedOverlay);
+
+                $scope.newScenario.videos[$scope.currentVideoIndex].overlay = overlay;
+
+            } else {
+                console.log('new overlay');
+                // Create new Overlay and attach the newly created to the video
+
+                if (validateOverlay()) {
+
+                    if (!$scope.newOverlay.category) {
+                        $scope.newOverlay.category = "other"
+                    }
+
+                    console.log($scope.newOverlay);
+
+                    $overlayService.create($scope.newOverlay).then(function (created_overlay) {
+                        $scope.newScenario.videos[$scope.currentVideoIndex].overlay = created_overlay.data;
+                        $scope.currentVideoIndex++;
+                        console.log($scope.newScenario);
+                        $scope.currentVideo = $scope.newScenario.videos[$scope.currentVideoIndex];
+
+                    })
+                } else {
+                    return;
+                }
+            }
+        }
+
+        var validateOverlay = function () {
+
+            var name_input = angular.element('#overlay_name-input');
+            var desc_input = angular.element('#overlay_desc-input');
+            var tags_input = angular.element('#overlay_tags-input');
+            var url_input = angular.element('#overlay_url-input');
+
+            var isValid = true;
+
+            if ($scope.newOverlay.name == "") {
+                name_input.parent().parent().addClass('has-danger')
+                name_input.addClass('form-control-danger');
+                isValid = false;
+            }
+
+            if ($scope.newOverlay.description == "") {
+                desc_input.parent().parent().addClass('has-danger')
+                desc_input.addClass('form-control-danger');
+                isValid = false;
+            }
+
+            // Put tags in array
+            if ($scope.newOverlay.tags != "") {
+                // Parse array, grab them by the comma and remove the #
+                var tagArray = [];
+                $scope.newOverlay.tags.split(', ').forEach(function (element) {
+                    if (element.charAt(0) == "#") {
+                        tagArray.push(element.slice(1));
+                    }
+                }, this);
+                $scope.newOverlay.tags_parsed = tagArray;
+            }
+
+
+            if ($scope.newOverlay.url == "") {
+                desc_input.parent().parent().addClass('has-danger')
+                desc_input.addClass('form-control-danger');
+                isValid = false;
+            }
+
+            if (isValid) {
+                return true;
+            } else {
+                return false;
+            }
+        }
+
+        // Switch to Overlay placement
+        if ($scope.currentVideoIndex == $scope.newScenario.videos.length - 1) {
+            $scope.currentState.createOverlay = false;
+            $scope.currentState.placeOverlay = true;
+        } else {
+            nextVideo();
+        }
     }
 
     /**
-     *  
      *  Type Switching Functions
-     * 
      */
 
     $scope.switchOverlayType = function () {
@@ -854,7 +969,7 @@ app.controller("scenarioCreateNewController", function ($scope, config, $authent
             })
 
     }
-    //$scope.videoDebug();
+    $scope.videoDebug();
 
 
 
