@@ -36,7 +36,7 @@ app.controller("videoDetailController", function ($scope, $window, config, $auth
                 videoExtension = 'mp4';
                 $scope.video.url += '.mp4';
             }
-            console.log(videoExtension);
+            // console.log(videoExtension);
             console.log($scope.video.url);
             // Init video, TODO: Fill with real video and remove placeholder
             $scope.videoConfig = {
