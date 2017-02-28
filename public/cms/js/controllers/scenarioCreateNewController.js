@@ -52,22 +52,12 @@ app.controller("scenarioCreateNewController", function ($scope, config, $authent
             $scenarioService.create($scope.newScenario)
                 .then(function (response) {
                     $scope.newScenario = response.data;
+                    $scope.newScenario.videos = [];
                     $scope.currentState.general = false;
                     $scope.currentState.scenarioVideoOverview = true;
                     angular.element('#step2').addClass('active');
-
-                    console.log(response);
-                    console.log($scope.newScenario);
                 })
         }
-
-        // FOR TESTING, REMOVE AFTERWARDS + enable validation function again:
-        $scope.currentState.general = false;
-        $scope.currentState.scenarioVideoOverview = true;
-        angular.element('#step2').addClass('active');
-        // FOR TESTING, REMOVE AFTERWARDS^^^^
-
-
     }
 
     // Function that triggers the addtion of a Video to the Scenario
@@ -91,55 +81,24 @@ app.controller("scenarioCreateNewController", function ($scope, config, $authent
 
         $scope.featureGroup = null;
         $scope.uploadStarted = false;
-        // $scope.uploadingVideo = null;
         $scope.file_selected = false;
 
         $scope.setupAddNewVideoMap();
-
-
     }
 
     // onAddVideo Pressed
     $scope.submitVideo = function () {
-        console.log($scope.currentState);
         if ($scope.existingVideo) {
             // Existing video
-
-            console.log($scope.newVideo);
             $scope.newScenario.videos.push($scope.newVideo);
-
             $scope.currentState.addVideo = false;
             $scope.currentState.scenarioVideoOverview = true;
-
-            //add video to scenario array + create relation here
             return;
         }
 
         if ($scope.validateVideo()) {
-            // if (true) {
-
-            // Now the case of a new video
-
-            // if ($scope.existingLocation) {
-            //     // No new location needs to be created
-            //     // Create relations + continue to upload
-            //     $scope.uploadVideo();
-
-
-
-            // } else {
-
-            //     console.log('new video with new loc');
-
-            //     $scope.uploadVideo();
-
-            //     console.log($scope.newVideo);
-            //     // Create location here
-            // }
-
-
             // Upload video here
-            console.log('Lets go and upload something...');
+            console.log('Upload started.');
             $scope.uploadVideo();
         }
 
@@ -196,7 +155,6 @@ app.controller("scenarioCreateNewController", function ($scope, config, $authent
             })
             .success(function (data, status, headers, config) {
                 console.log("Upload finished! Creating Thumbnail now...");
-                // console.log(data);
 
                 $videoService.create({
                     name: $scope.newVideo.name,
@@ -219,19 +177,14 @@ app.controller("scenarioCreateNewController", function ($scope, config, $authent
 
                     $relationshipService.create('recorded_at', recorded_at).then(function (createdRelation) {
                         if (createdVideo.status == 201) {
-                            // console.log('/videos/' + createdVideo);
-
                             $scope.newScenario.videos.push(createdVideo.data);
                             $scope.currentState.addVideo = false;
                             $scope.currentState.scenarioVideoOverview = true;
-
-                            // $scope.redirect('/videos/' + createdVideo.data.video_id);
                         }
 
                     })
 
                 })
-
 
             })
             .error(function (data, status, headers, config) {
@@ -251,13 +204,17 @@ app.controller("scenarioCreateNewController", function ($scope, config, $authent
                 $scope.currentState.createOverlay = false;
                 $scope.currentState.addVideo = true;
             case 'addVideo':
-                // $scope.existingVideo = false;
+                $scope.existingVideo = false;
                 $scope.currentState.scenarioVideoOverview = true;
                 $scope.currentState.addVideo = false;
         }
     }
 
     $scope.createOverlay = function () {
+
+        if ($scope.newScenario.videos.length == 0) {
+            $window.alert('Your Scenario needs at least one video...');
+        }
 
         $scope.currentState.scenarioVideoOverview = false;
         $scope.currentState.createOverlay = true;
@@ -281,10 +238,7 @@ app.controller("scenarioCreateNewController", function ($scope, config, $authent
                 { src: $sce.trustAsResourceUrl($scope.currentVideo.url), type: "video/" + videoExtension }
             ],
             tracks: [],
-            theme: "../bower_components/videogular-themes-default/videogular.css",
-            // plugins: {
-            //     poster: "http://www.videogular.com/assets/images/videogular.png"
-            // }
+            theme: "../bower_components/videogular-themes-default/videogular.css"
         }
 
         // Variable to indicate wether to add an existing or a new overlay
@@ -299,11 +253,7 @@ app.controller("scenarioCreateNewController", function ($scope, config, $authent
             url: ""
         }
 
-        console.log($scope.newScenario.videos);
-
         $scope.searchOverlay = function () {
-
-            // console.log($scope.searchOverlayTerm);
 
             $overlayService.list().then(function (response) {
 
@@ -311,45 +261,34 @@ app.controller("scenarioCreateNewController", function ($scope, config, $authent
                 $scope.overlaySearchResults = [];
 
                 if ($scope.searchOverlayTerm == "") {
-
-                    $scope.overlaySearchResults = [];
-
+                    // Add the first 5 Results to fill the space
+                    $scope.overlaySearchResults = [response.data[0], response.data[1], response.data[2], response.data[3], response.data[4]];
                 }
-                console.log(overlays);
                 overlays.forEach(function (overlay) {
-
                     if (overlay.name.search($scope.searchOverlayTerm) != -1) {
                         $scope.overlaySearchResults.push(overlay);
                     }
-
                 }, this);
 
             })
-
         }
 
         // Function that is called in the table of existing overlays
         $scope.selectOverlay = function (overlay) {
             $scope.selectedOverlay = overlay;
         }
-
     }
 
     // Function that is called when no Overlay wants to be added
     $scope.skipVideo = function () {
-
-        // Change Video Preview
-        // Skip Video and dont attach a video for it
 
         // If it was the last video set the state to finishScenario
         if ($scope.currentVideoIndex == $scope.newScenario.videos.length - 1) {
             $scope.currentState.createOverlay = false;
             $scope.currentState.finishScenario = true;
         } else {
-
             $scope.currentVideoIndex++;
             $scope.currentVideo = $scope.newScenario.videos[$scope.currentVideoIndex];
-
             var videoExtension = $scope.currentVideo.url.split('.')[1];
 
             // Wenn keine extension in der URL war..
@@ -357,13 +296,12 @@ app.controller("scenarioCreateNewController", function ($scope, config, $authent
                 videoExtension = 'mp4';
                 $scope.currentVideo.url += '.mp4';
             }
-
+            // Change Video Preview
             $scope.videoConfig.sources = [{ src: $sce.trustAsResourceUrl($scope.currentVideo.url), type: "video/" + videoExtension }];
         }
     }
 
     $scope.submitOverlay = function () {
-        // var prepareToPlaceOverlay = function () {
         // Add an overlay to the video
         var validateOverlay = function () {
 
@@ -398,7 +336,6 @@ app.controller("scenarioCreateNewController", function ($scope, config, $authent
                 $scope.newOverlay.tags_parsed = tagArray;
             }
 
-
             if ($scope.newOverlay.url == "") {
                 desc_input.parent().parent().addClass('has-danger')
                 desc_input.addClass('form-control-danger');
@@ -414,71 +351,80 @@ app.controller("scenarioCreateNewController", function ($scope, config, $authent
 
         if ($scope.existingOverlay) {
             // Retrieve the existing overlay and attach it to the video
-            console.log('existing');
-
-            console.log($scope.selectedOverlay);
-
             $scope.newScenario.videos[$scope.currentVideoIndex].overlay = $scope.selectedOverlay;
-
-
             $scope.placeOverlay($scope.currentVideo.overlay);
-
-
-
         } else {
-            console.log('new overlay');
             // Create new Overlay and attach the newly created to the video
-
             if (validateOverlay()) {
-
                 if (!$scope.newOverlay.category) {
                     $scope.newOverlay.category = "other"
                 }
-
-                console.log($scope.newOverlay);
-
                 $overlayService.create($scope.newOverlay).then(function (created_overlay) {
                     $scope.newScenario.videos[$scope.currentVideoIndex].overlay = created_overlay.data;
-
-                    console.log($scope.newScenario);
-
                     // Switch to Overlay Placement Screen
                     $scope.placeOverlay(created_overlay);
-
                 })
             } else {
                 return;
             }
         }
-        // }
-
-
-
-
-
-        // Switch to Overlay placement
-        // if ($scope.currentVideoIndex == $scope.newScenario.videos.length - 1) {
-        //     $scope.currentState.createOverlay = false;
-        //     $scope.currentState.finishScenario = true;
-        //     // $scope.currentState.placeOverlay = true;
-
-        // } else {
-        //     prepareToPlaceOverlay();
-        // }
     }
 
+
+    /**
+     * 
+     * =============
+     * To be implemented
+     * =============
+     * 
+     */
     // Placement of an Overlay
     // To be adpoted from the IPED-Toolkit
     $scope.placeOverlay = function (currentOverlay) {
-
-        console.log('Lets place some Overlays');
-        console.log($scope.currentVideo);
         $scope.currentState.createOverlay = false;
         $scope.currentState.placeOverlay = true;
 
-        // At the end: Set state to addOverlay, increase index++ and set $scope.currentVideo if it's not the last video
+        // At the end: Set state to createOverlay, increase index++ and set $scope.currentVideo if it's not the last video
         // If it's the last video set state to finishScenario
+        $scope.submitOverlayRotation = function () {
 
+            // Handle stuff here, read out from three.js or so..
+            if ($scope.currentVideoIndex == $scope.newScenario.videos.length - 1) {
+                $scope.currentState.placeOverlay = false;
+                $scope.currentState.finishScenario = true;
+            } else {
+                $scope.currentVideoIndex++;
+                $scope.currentVideo = $scope.newScenario.videos[$scope.currentVideoIndex];
+
+
+                var videoExtension = $scope.currentVideo.url.split('.')[1];
+
+                // Wenn keine extension in der URL war..
+                if (videoExtension == null) {
+                    videoExtension = 'mp4';
+                    $scope.currentVideo.url += '.mp4';
+                }
+                // Adjust implemented video url
+                $scope.videoConfig.sources = [{ src: $sce.trustAsResourceUrl($scope.currentVideo.url), type: "video/" + videoExtension }];
+
+                $scope.currentState.placeOverlay = false;
+                $scope.currentState.createOverlay = true;
+            }
+
+        }
+    }
+
+
+    /**
+     * 
+     * =============
+     * To be implemented
+     * =============
+     * 
+     */
+    $scope.finishScenario = function () {
+        console.log('Finished!');
+        $scope.redirect('/scenarios');
     }
 
     /**
@@ -525,7 +471,6 @@ app.controller("scenarioCreateNewController", function ($scope, config, $authent
         var name_input = angular.element('#name-input');
         var desc_input = angular.element('#desc-input');
         var tags_input = angular.element('#tags-input');
-        // var created_input = angular.element('#created-input');
 
         var isValid = true;
 
@@ -552,54 +497,8 @@ app.controller("scenarioCreateNewController", function ($scope, config, $authent
             }, this);
             $scope.newScenario.tags_parsed = tagArray;
         }
-        /**
-         * 
-         * Old Stuff, created date will be generated on the server...
-         * 
-         */
 
-        // Validate the input for the date and parse it
-        // if ($scope.newScenario.created != "") {
-
-        //     // Try to create a new date
-        //     var created_date = new Date($scope.newScenario.created);
-
-        //     // Check if it has been parsed correctly
-        //     if (isNaN(created_date)) {
-        //         created_input.parent().parent().addClass('has-danger')
-        //         created_input.addClass('form-control-danger');
-        //         isValid = false;
-        //     }
-
-        //     // Catch dates in the future...
-        //     if (created_date > new Date()) {
-        //         created_input.parent().parent().addClass('has-danger')
-        //         created_input.addClass('form-control-danger');
-        //         isValid = false;
-        //     }
-
-        // } else {
-        //     created_input.parent().parent().addClass('has-danger')
-        //     created_input.addClass('form-control-danger');
-        //     isValid = false;
-        // }
-
-
-        /**
-         * 
-         * Enable this below again, after testing is done..
-         * 
-         */
-
-
-        // if (isValid) {
-        //     return true;
-        // } else return false;
-
-
-        // For testing:
-        return false;
-
+        return isValid;
     }
 
     $scope.validateVideo = function () {
@@ -635,13 +534,9 @@ app.controller("scenarioCreateNewController", function ($scope, config, $authent
             $scope.newVideo.tags_parsed = tagArray;
         }
 
-
         if ($scope.newVideo.recorded != null) {
-
             // Try to create a new date
             var created_date = new Date($scope.newVideo.recorded);
-
-            console.log($scope.newVideo.recorded);
 
             // Check if it has been parsed correctly
             if (isNaN(created_date)) {
@@ -665,7 +560,7 @@ app.controller("scenarioCreateNewController", function ($scope, config, $authent
 
         // Check if Location is valid and not on the 0:0-Island
 
-        if (newVideo.location.lat == 0 || newVideo.location.lat == 0) {
+        if ($scope.newVideo.location.lat == 0 || $scope.newVideo.location.lat == 0) {
             var lat_input = angular.element('#latitude');
             var lng_input = angular.element('#longitude');
 
@@ -673,13 +568,7 @@ app.controller("scenarioCreateNewController", function ($scope, config, $authent
             lng_input.parent().parent().addClass('has-danger');
             isValid = false;
         }
-
-        if (isValid) {
-            return true;
-        } else {
-            return false;
-        }
-
+        return isValid;
     }
 
     /**
@@ -720,15 +609,9 @@ app.controller("scenarioCreateNewController", function ($scope, config, $authent
                     marker.on('click', function (e) {
                         $scope.newVideo.location.lat = e.latlng.lat;
                         $scope.newVideo.location.lng = e.latlng.lng;
-                        // $scope.newVideo.location.l_id = location.l_id;
                         $scope.newVideo.location.name = location.name;
-
-                        // location_id = location.location_id;
                         $scope.newVideo.location.location_id = location.location_id;
-                        // $scope.newLocation = location;
-                        // $scope.createLocation = false;
                         $scope.existingLocation = true;
-                        // console.log($scope.newVideo);
 
                     })
                     locationMarkers.push(marker);
@@ -763,7 +646,6 @@ app.controller("scenarioCreateNewController", function ($scope, config, $authent
                 ownMarker.on('dragend', function (e) {
                     //Clear to have a clean new location
                     $scope.newVideo.location = {};
-
                     $scope.newVideo.location.lat = e.target._latlng.lat;
                     $scope.newVideo.location.lng = e.target._latlng.lng;
                     $scope.existingLocation = false;
@@ -781,7 +663,6 @@ app.controller("scenarioCreateNewController", function ($scope, config, $authent
 
                 var searchLocationMarkers = [];
                 response.data.forEach(function (location) {
-
                     if ($scope.searchLocationTerm == "") {
                         if (location.location_type != "indoor" && location.lat != 0 && location.lng != 0) {
 
@@ -823,9 +704,6 @@ app.controller("scenarioCreateNewController", function ($scope, config, $authent
                 }, this);
 
                 // Clear map and add new featureGroup with searchResults
-
-                console.log(searchLocationMarkers);
-
                 leafletData.getMap('addNewVideoMap').then(function (map) {
 
                     map.removeLayer($scope.featureGroup);
@@ -856,7 +734,7 @@ app.controller("scenarioCreateNewController", function ($scope, config, $authent
                         if (video.video_id == relation.video_id) {
 
                             // We dont want to display indoor locations
-                            
+
                             if (relation.location_type != "indoor" && relation.location_lat != 0 && relation.location_lng != 0) {
 
                                 var myIcon = new L.Icon({
@@ -870,15 +748,10 @@ app.controller("scenarioCreateNewController", function ($scope, config, $authent
                                 var marker = new L.Marker(L.latLng(relation.location_lat, relation.location_lng), { clickable: true, icon: myIcon }).bindPopup(popupContent);
 
                                 marker.on('click', function (e) {
-
                                     $scope.newVideo = video;
-
                                     $scope.existingVideo = true;
-
                                 })
-
                                 videoMarkers.push(marker);
-
                             }
 
                             if (video_index == videos.data.length - 1) {
@@ -894,8 +767,6 @@ app.controller("scenarioCreateNewController", function ($scope, config, $authent
                         }
 
                     }, this);
-
-
                 }, this);
 
 
@@ -921,13 +792,10 @@ app.controller("scenarioCreateNewController", function ($scope, config, $authent
                                 })
 
                                 var popupContent = `Selected Video: <br> Video Name: ${relation.video_name} <br> Description: ${relation.video_description} `;
-                                var cleared_marker = new L.Marker(L.latLng(relation.location_lat, relation.location_lng), { clickable: true, icon: myIcon }) //.bindPopup(popupContent);
+                                var marker = new L.Marker(L.latLng(relation.location_lat, relation.location_lng), { clickable: true, icon: myIcon }).bindPopup(popupContent);
 
-                                console.log('Marker creation');
+                                marker.on('click', function (e) {
 
-                                cleared_marker.on('click', function (e) {
-
-                                    console.log('Marker clicked');
 
                                     $scope.newVideo = {
                                         name: relation.video_name,
@@ -942,7 +810,7 @@ app.controller("scenarioCreateNewController", function ($scope, config, $authent
                                     $scope.existingVideo = true;
 
                                 })
-                                searchVideoMarkers.push(cleared_marker);
+                                searchVideoMarkers.push(marker);
                             }
                             return;
                         }
@@ -982,61 +850,12 @@ app.controller("scenarioCreateNewController", function ($scope, config, $authent
 
                     // Clear map and add new featureGroup with searchResults
                     leafletData.getMap('addExistingVideoMap').then(function (map) {
-
                         map.removeLayer($scope.featureGroup);
                         $scope.featureGroup = new L.featureGroup(searchVideoMarkers).addTo(map);
                         map.fitBounds($scope.featureGroup.getBounds(), { animate: false, padding: L.point(50, 50) });
                     })
-
-
                 }
-
-
             })
-
-
-
         })
-
-
-
-
-
     }
-
-    /**
-     * 
-     *  Debug and testing methods
-     * 
-     */
-
-    $scope.videoDebug = function () {
-
-        // $videoService.list()
-        //     .then(function onSuccess(response) {
-        //         // $scope.scenarios = response.data;
-
-        //         // Just add 3 videos to the new scenario to see styling
-        //         $scope.newScenario.videos.push(response.data[0]);
-        //         $scope.newScenario.videos.push(response.data[1]);
-        //         $scope.newScenario.videos.push(response.data[2]);
-
-        //         // add scenario_position value
-        //         var i = 1;
-        //         $scope.newScenario.videos.forEach(function (element) {
-        //             element.scenario_position = i.toString();
-        //             i++;
-        //         }, this);
-
-        //         // console.log($scope.newScenario.videos);
-        //     })
-
-
-        $videoService.retrieve(197).then(function onSuccess(response) {
-
-            $scope.newScenario.videos.push(response.data);
-        })
-
-    }
-    $scope.videoDebug();
 });
