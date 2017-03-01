@@ -13,7 +13,7 @@
                 <button ng-click="portraitView = true" type="button" ng-class="{'active': portraitView === true}" class="btn btn-secondary">
                     <i class="fa fa-th-large" aria-hidden="true"></i>
                 </button>
-                <button ng-click="portraitView = false" type="button" ng-class="{'active': portraitView === false}"class="btn btn-secondary">
+                <button ng-click="portraitView = false" type="button" ng-class="{'active': portraitView === false}" class="btn btn-secondary">
                     <i class="fa fa-list" aria-hidden="true"></i>
                 </button>
             </div>
@@ -30,7 +30,7 @@
         <img src="http://lorempixel.com/300/169"></br>
         <i class="fa fa-tags" aria-hidden="true"></i><span class="tag" ng-repeat="tag in scenario.tags">{{tag}}</span></br>
         <a href="" ng-click=""><i class="fa fa-pencil-square-o" aria-hidden="true"></i></a>
-        <a href="" ng-click=""><i class="fa fa-trash-o" aria-hidden="true"></i></a></br>
+        <a href="" ng-click="deleteScenario(scenario.scenario_id)"><i class="fa fa-trash-o" aria-hidden="true"></i></a></br>
     </div>
     <div class="col-md-4 addScenario">
         <a ng-click="redirect('/scenarios/create-new')" href="">Create new Scenario</br>
@@ -60,10 +60,12 @@
                     <td>{{scenario.name}}</td>
                     <td>{{scenario.description}}</td>
                     <td><i class="fa fa-tag" aria-hidden="true"></i><span class="tag" ng-repeat="tag in scenario.tags">{{tag}}</span></td>
-                    <td>{{scenario.created}}</td>
-                    <td>{{scenario.updated}}</td>
-                    <td><i ng-click="" class="fa fa-pencil-square-o" aria-hidden="true"></i>
-                    <i ng-click="" class="fa fa-trash-o" aria-hidden="true"></i></td>
+                    <td>{{scenario.created | timestamp}}</td>
+                    <td>{{scenario.updated | timestamp}}</td>
+                    <td>
+                        <a href="" ng-click=""> <i class="fa fa-pencil-square-o" aria-hidden="true"></i></a>
+                        <a href="" ng-click="deleteScenario(scenario.scenario_id)"><i class="fa fa-trash-o" aria-hidden="true"></i></a>
+                    </td>
                 </tr>
             </tbody>
         </table>

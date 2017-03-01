@@ -51,9 +51,7 @@ app.controller("videoOverviewController", function ($scope, $window, config, $vi
                 $scope.videos.forEach(function (video, index) {
 
                     if (video.video_id == video_id) {
-                        console.log(index);
                         $scope.videos.splice(index, 1);
-                        console.log($scope.videos);
                     }
 
                 }, this);
