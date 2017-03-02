@@ -26,12 +26,10 @@ app.controller("scenarioDetailController", function ($scope, $window, config, $a
 
     $scenarioService.retrieve($routeParams.scenario_id)
         .then(function onSuccess(response) {
-            console.log(response.data);
-
             $scope.scenario = response.data;
             $scope.scenario.videos = [];
 
-            // Style date to 
+            // Style date 
             $scope.scenario.created = $filter('timestamp')($scope.scenario.created);
             $scope.scenario.tags = ['tag1,tag2,tag3'];
 
@@ -49,44 +47,66 @@ app.controller("scenarioDetailController", function ($scope, $window, config, $a
                 $relationshipService.list_by_type('recorded_at').then(function onSuccess(response) {
                     var video_locations = response.data;
 
-                    video_locations.forEach(function (relation) {
+                    var videoMarkers = [];
 
+                    video_locations.forEach(function (relation) {
                         $scope.scenario.videos.forEach(function (video, index) {
                             if (relation.video_id == video.video_id) {
                                 $scope.scenario.videos[index].location = relation;
+                                $scope.scenario.videos[index].overlays = [];
+
+                                // Create Marker for every video's location
+                                if ($scope.scenario.videos[index].location.location_type == 'outdoor') {
+                                    var location = new L.latLng($scope.scenario.videos[index].location.location_lat, $scope.scenario.videos[index].location.location_lng);
+                                    console.log(location);
+                                    var popupContent = `Video: ${$scope.scenario.videos[index].video_name} <br> Location: ${$scope.scenario.videos[index].location.location_name}`;
+                                    var videoMarker = new L.Marker(location, { clickable: true }).bindPopup(popupContent);
+                                    videoMarkers.push(videoMarker);
+                                }
                             }
                         })
                     })
 
-                    console.log($scope.scenario)
-                })
-
-                // Get the Overlays for each video and attach them
-
-                $relationshipService.list_by_type('embedded_in').then(function onSuccess(response) {
-                    var overlay_relations = response.data;
-                    overlay_relations.forEach(function (relation) {
-                        var i = 0;
-                        $scope.scenario.videos.forEach(function (video, index) {
-                            
-                            if (relation.video_id == video.video_id) {
-                                $scope.scenario.videos[index].overlays = [];
-                                $scope.scenario.videos[index].overlays[i] = relation;
-                                i++;
-                            }
-                        })
+                    leafletData.getMap('scenarioDetailMap').then(function (map) {
+                        var featureGroup = new L.featureGroup(videoMarkers).addTo(map);
+                        map.fitBounds(featureGroup.getBounds(), { animate: false, padding: L.point(50, 50) })
                     });
+
+
+                    // Get the Overlays for each video and attach them
+
+                    $relationshipService.list_by_type('embedded_in').then(function onSuccess(response) {
+                        var overlay_relations = response.data;
+                        overlay_relations.forEach(function (relation) {
+                            var i = 0;
+                            $scope.scenario.videos.forEach(function (video, index) {
+                                if (relation.video_id == video.video_id) {
+                                    $scope.scenario.videos[index].overlays[i] = relation;
+                                    i++;
+                                }
+                                if (i > 1) {
+                                    $scope.scenario.videos[index].multipleOverlays = true
+                                }
+                            })
+                        });
+                    })
                 })
             })
+            /**
+             * 
+             *  Find Relations between the locations to see triggerable 'options'
+             *  Since I can't contact the service yet to indentify them per scenario
+             *  this will be added later
+             * 
+             */
 
-            $relationshipService.list_by_type('connected_to').then(function onSuccess(response) {
-                console.log(response.data);
-            })
+            // $relationshipService.list_by_type('connected_to').then(function onSuccess(response) {
+            //     // console.log(response.data);
+            //     // console.log($scope.scenario)
+
+            // })
+
         });
-
-
-
-
 
     angular.extend($scope, {
         defaults: {
@@ -201,38 +221,42 @@ app.controller("scenarioDetailController", function ($scope, $window, config, $a
 
     }
 
-    $scope.deleteVideo = function () {
-
-        if ($window.confirm(`You are going to delete the Video. Are you sure? THIS WILL NOT BE REVERSIBLE!`)) {
-            if ($window.confirm('Are you really, really sure?')) {
-
-                $videoService.remove($scope.video.video_id).then(function (response) {
-                    console.log('Video removed');
-                });
-
-                // Delete relation to the location
-                $relationshipService.list_by_type('recorded_at').then(function (relations) {
-
-                    relations.data.forEach(function (relation) {
-                        if (relation.video_id == $scope.video_id) {
-                            $relationshipService.remove(relation.relationship_id).then(function (response) {
-
-                                if (response.status == 200) {
-                                    $scope.redirect('/videos');
-                                } else {
-                                    console.log(response);
-                                    $scope.redirect('/videos');
-                                }
-                            })
-                        }
-                    }, this);
-                    // Fallback if there is no relation to be deleted - shouldn't be the case in production though..
-                    $scope.redirect('/videos');
-                })
-
-            }
-        }
+    $scope.deleteVideo = function (video_id) {
+        console.log(video_id);
     }
+
+    // $scope.deleteVideo = function () {
+
+    //     if ($window.confirm(`You are going to delete the Video. Are you sure? THIS WILL NOT BE REVERSIBLE!`)) {
+    //         if ($window.confirm('Are you really, really sure?')) {
+
+    //             $videoService.remove($scope.video.video_id).then(function (response) {
+    //                 console.log('Video removed');
+    //             });
+
+    //             // Delete relation to the location
+    //             $relationshipService.list_by_type('recorded_at').then(function (relations) {
+
+    //                 relations.data.forEach(function (relation) {
+    //                     if (relation.video_id == $scope.video_id) {
+    //                         $relationshipService.remove(relation.relationship_id).then(function (response) {
+
+    //                             if (response.status == 200) {
+    //                                 $scope.redirect('/videos');
+    //                             } else {
+    //                                 console.log(response);
+    //                                 $scope.redirect('/videos');
+    //                             }
+    //                         })
+    //                     }
+    //                 }, this);
+    //                 // Fallback if there is no relation to be deleted - shouldn't be the case in production though..
+    //                 $scope.redirect('/videos');
+    //             })
+
+    //         }
+    //     }
+    // }
 
 
 
