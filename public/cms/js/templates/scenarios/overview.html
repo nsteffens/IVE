@@ -29,7 +29,7 @@
         <p>{{scenario.name}}</p>
         <img src="http://lorempixel.com/300/169"></br>
         <i class="fa fa-tags" aria-hidden="true"></i><span class="tag" ng-repeat="tag in scenario.tags">{{tag}}</span></br>
-        <a href="" ng-click=""><i class="fa fa-pencil-square-o" aria-hidden="true"></i></a>
+        <a href="" ng-click="redirect('/scenarios/'+ scenario.scenario_id)"><i class="fa fa-pencil-square-o" aria-hidden="true"></i></a>
         <a href="" ng-click="deleteScenario(scenario.scenario_id)"><i class="fa fa-trash-o" aria-hidden="true"></i></a></br>
     </div>
     <div class="col-md-4 addScenario">

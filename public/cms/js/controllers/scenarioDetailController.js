@@ -1,6 +1,6 @@
 var app = angular.module("ive_cms");
 
-app.controller("videoDetailController", function ($scope, $window, config, $authenticationService, $videoService, $locationService, $relationshipService, $location, $routeParams, $sce, $filter, leafletData) {
+app.controller("scenarioDetailController", function ($scope, $window, config, $authenticationService, $scenarioService, $locationService, $relationshipService, $location, $routeParams, $sce, $filter, leafletData) {
 
     $scope.subsite = "detail";
     $scope.editMode = false;
@@ -9,7 +9,7 @@ app.controller("videoDetailController", function ($scope, $window, config, $auth
     var name_input = angular.element('#name-input');
     var desc_input = angular.element('#desc-input');
     var tags_input = angular.element('#tags-input');
-    var recorded_input = angular.element('#recorded-input');
+    var created_input = angular.element('#created-input');
 
     $authenticationService.authenticate(config.backendLogin)
         .then(function onSuccess(response) {
@@ -18,55 +18,29 @@ app.controller("videoDetailController", function ($scope, $window, config, $auth
         .catch(function onError(response) {
             $window.alert(response.data);
         });
+/**
+ * 
+ *      INIT
+ * 
+ */
 
-    $videoService.retrieve($routeParams.video_id)
+    $scenarioService.retrieve($routeParams.scenario_id)
         .then(function onSuccess(response) {
 
-            $scope.video = response.data;
+            $scope.scenario = response.data;
 
             // Style date to 
-            $scope.video.recorded = $filter('timestamp')($scope.video.recorded);
-            $scope.video.tags = ['tag1,tag2,tag3'];
-            // console.log($scope.video);
-
-            var videoExtension = $scope.video.url.split('.')[1];
-
-            // Wenn keine extension in der URL war..
-            if (videoExtension == null) {
-                videoExtension = 'mp4';
-                $scope.video.url += '.mp4';
-            }
-            // console.log(videoExtension);
-            console.log($scope.video.url);
-            // Init video, TODO: Fill with real video and remove placeholder
-            $scope.videoConfig = {
-                sources: [
-                    { src: $sce.trustAsResourceUrl($scope.video.url), type: "video/" + videoExtension }
-                ],
-                tracks: [],
-                theme: "../bower_components/videogular-themes-default/videogular.css",
-                // plugins: {
-                //     poster: "/" + $scope.video.url + '_thumbnail.png'
-                // }
-            }
+            $scope.scenario.created = $filter('timestamp')($scope.scenario.created);
+            $scope.scenario.tags = ['tag1,tag2,tag3'];
 
 
             // Get relationship to get the fitting location
-            $relationshipService.list_by_type('recorded_at').then(function (results) {
-                results.data.forEach(function (relation) {
-                    if (relation.video_id == $scope.video.video_id) {
 
-                        leafletData.getMap('videoDetailMap').then(function (map) {
-                            var popupContent = `Location: ${relation.location_name}`;
-                            var videoPositionMarker = new L.Marker(L.latLng(relation.location_lat, relation.location_lng), { clickable: true }).bindPopup(popupContent);
-                            videoPositionMarker.addTo(map);
-                            map.setView(videoPositionMarker._latlng, 14);
-                        });
-                    }
-
-                }, this);
-            })
         });
+
+
+
+
 
     angular.extend($scope, {
         defaults: {
@@ -80,7 +54,6 @@ app.controller("videoDetailController", function ($scope, $window, config, $auth
         }
     });
 
-
     /**
      * [redirect description]
      * @param  {[type]} path [description]
@@ -90,21 +63,19 @@ app.controller("videoDetailController", function ($scope, $window, config, $auth
         $location.url(path);
     };
 
-
     // Function that is triggered, when the edit button has been pressed
-    $scope.editVideo = function () {
-
+    $scope.editScenario = function () {
 
         if ($scope.editMode) {
             $scope.editMode = false;
             name_input.prop('disabled', true);
             desc_input.prop('disabled', true);
             tags_input.prop('disabled', true);
-            recorded_input.prop('disabled', true);
+            created_input.prop('disabled', true);
         } else {
             $scope.editMode = true;
             // Enable input Fields
-            var inputFields = angular.element('.col-10 > .form-control').removeAttr('disabled');
+            angular.element('.col-10 > .form-control').removeAttr('disabled');
         }
     }
 
