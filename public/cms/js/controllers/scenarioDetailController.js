@@ -58,7 +58,6 @@ app.controller("scenarioDetailController", function ($scope, $window, config, $a
                                 // Create Marker for every video's location
                                 if ($scope.scenario.videos[index].location.location_type == 'outdoor') {
                                     var location = new L.latLng($scope.scenario.videos[index].location.location_lat, $scope.scenario.videos[index].location.location_lng);
-                                    console.log(location);
                                     var popupContent = `Video: ${$scope.scenario.videos[index].video_name} <br> Location: ${$scope.scenario.videos[index].location.location_name}`;
                                     var videoMarker = new L.Marker(location, { clickable: true }).bindPopup(popupContent);
                                     videoMarkers.push(videoMarker);
@@ -146,8 +145,8 @@ app.controller("scenarioDetailController", function ($scope, $window, config, $a
     }
 
     // Function that is triggered when the in editMode accessible button "delete" is clicked
-    $scope.saveVideo = function () {
-        console.log($scope.video);
+    $scope.saveScenario = function () {
+        console.log($scope.scenario);
 
         // Validate input
 
@@ -155,13 +154,13 @@ app.controller("scenarioDetailController", function ($scope, $window, config, $a
 
         var isValid = true;
 
-        if ($scope.video.name == "") {
+        if ($scope.scenario.name == "") {
             name_input.parent().parent().addClass('has-danger')
             name_input.addClass('form-control-danger');
             isValid = false;
         }
 
-        if ($scope.video.description == "") {
+        if ($scope.scenario.description == "") {
             desc_input.parent().parent().addClass('has-danger')
             desc_input.addClass('form-control-danger');
             isValid = false;
@@ -181,50 +180,69 @@ app.controller("scenarioDetailController", function ($scope, $window, config, $a
         }
         */
 
-        if ($scope.video.recorded != "") {
-
+        if ($scope.scenario.created != "") {
             // Trying to create a new date
-            var recorded_date = new Date(parseInt($scope.video.recorded.split('-')[0]), parseInt($scope.video.recorded.split('-')[1]), parseInt($scope.video.recorded.split('-')[2]));
-            console.log($scope.video.recorded.split('-'));
-            console.log(recorded_date);
+            var created_date = new Date(parseInt($scope.scenario.created.split('-')[0]), parseInt($scope.scenario.created.split('-')[1] - 1), parseInt($scope.scenario.created.split('-')[2]));
             // Check if it has been parsed correctly
-            if (isNaN(recorded_date)) {
-                recorded_input.parent().parent().addClass('has-danger')
-                recorded_input.addClass('form-control-danger');
+            if (isNaN(created_date)) {
+                created_input.parent().parent().addClass('has-danger')
+                created_input.addClass('form-control-danger');
                 isValid = false;
+                console.log(isNaN(created_date));
             }
 
             // Catch dates in the future...
-            if (recorded_date > new Date()) {
-                recorded_input.parent().parent().addClass('has-danger')
-                recorded_input.addClass('form-control-danger');
+            if (created_date > new Date()) {
+                created_input.parent().parent().addClass('has-danger')
+                created_input.addClass('form-control-danger');
                 isValid = false;
             }
 
         } else {
-            recorded_input.parent().parent().addClass('has-danger')
-            recorded_input.addClass('form-control-danger');
+            created_input.parent().parent().addClass('has-danger')
+            created_input.addClass('form-control-danger');
             isValid = false;
         }
 
         if (isValid) {
             console.log('saving video?')
-            $videoService.edit($scope.video.video_id, $scope.video).then(function (response) {
-                console.log(response);
-
+            $scenarioService.edit($scope.scenario.scenario_id, $scope.scenario).then(function (response) {
                 if (response.status == 200) {
-                    $scope.redirect('/videos');
+                    $scope.redirect('/scenarios');
                 }
             });
         }
-
-
     }
 
     $scope.deleteVideo = function (video_id) {
         console.log(video_id);
+
+        if ($window.confirm(`You are going to remove this Video from the Scenario. Are you sure? THIS WILL NOT BE REVERSIBLE!`)) {
+            if ($window.confirm('Are you really, really sure?')) { 
+                var video_to_delete;
+
+                // Remove Video from the (over)view
+                $scope.scenario.videos.forEach(function(video, index){
+                    
+                    if(video.video_id == video_id){
+                        video_to_delete = video;
+                        $scope.scenario.videos.splice(index, 1);
+                    }
+                })
+
+                // Remove belongs_to relation
+                // Disabled -- too dangerous ;-)
+                // $relationshipService.remove(video_to_delete.relationship_id).then(function(response){
+
+                // })
+            }
+        }
+
     }
 
+    $scope.deleteOverlay = function (overlay_id){
+
+    }
     // $scope.deleteVideo = function () {
 
     //     if ($window.confirm(`You are going to delete the Video. Are you sure? THIS WILL NOT BE REVERSIBLE!`)) {

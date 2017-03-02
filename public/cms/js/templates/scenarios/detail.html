@@ -61,7 +61,6 @@
     </div>
 </div>
 <!--End head area-->
-
 <hr>
 <hr>
 
@@ -70,23 +69,15 @@
         <p>Video: {{video.video_name}}</p>
         <img width="250px" height="141px" src="{{video.url + '_thumbnail.png'}}"></br>
         <a href="" ng-click="redirect('/videos/'+ video.video_id)"><i class="fa fa-pencil-square-o" aria-hidden="true"></i></a>
-        <a href="" ng-click="redirect('/videos/'+ video.video_id)"><i class="fa fa-trash-o" aria-hidden="true"></i></a>
+        <a href="" ng-click="deleteVideo(video.video_id)"><i class="fa fa-trash-o" aria-hidden="true"></i></a>
     </div>
     <div ng-repeat="overlay in video.overlays" class="col-md-3 offset-md-2 overlay">
         <p>Overlay #1</p>
         <img width="250px" height="141px" src="{{video.url + '_thumbnail.png'}}"></br>
-        <a href="" ng-click="redirect('/videos/'+ video.video_id)"><i class="fa fa-pencil-square-o" aria-hidden="true"></i></a>
-        <a href="" ng-click="redirect('/videos/'+ video.video_id)"><i class="fa fa-trash-o" aria-hidden="true"></i></a>
+        <a href="" ng-click="redirect('/overlays/'+ overlay.overlay_id)"><i class="fa fa-pencil-square-o" aria-hidden="true"></i></a>
+        <a href="" ng-click="deleteOverlay(overlay.overlay_id)"><i class="fa fa-trash-o" aria-hidden="true"></i></a>
         <a href="" ng-click="redirect('/videos/'+ video.video_id)"><i class="fa fa-arrows" aria-hidden="true"></i></a>
     </div>
-
-    <!--<div class="col-md-3 overlay">
-        <p>Overlay #2</p>
-        <img width="250px" height="141px" src="{{video.url + '_thumbnail.png'}}"></br>
-        <a href="" ng-click="redirect('/videos/'+ video.video_id)"><i class="fa fa-pencil-square-o" aria-hidden="true" title="Delete Video from this Scenario"></i></a>
-        <a href="" ng-click="redirect('/videos/'+ video.video_id)"><i class="fa fa-trash-o" aria-hidden="true" title="Delete Overlay from this Video"></i></a>
-        <a href="" ng-click="redirect('/videos/'+ video.video_id)"><i class="fa fa-arrows" aria-hidden="true" title="Replace Overlay"></i></a>
-    </div>-->
     <div ng-hide="video.multipleOverlays" class="col-md-3 addOverlay">
         <a ng-click="redirect('/overlays/create-new')" href="">Add Overlay</br>
         <i class="fa fa-plus-square-o fa-4x" aria-hidden="true"></i></a>
