@@ -8,12 +8,12 @@
     color: #193441;
 }
 
-.scenario a{
+.scenario a {
     text-decoration: none;
     color: #193441;
 }
 
-.scenario a:hover{
+.scenario a:hover {
     text-shadow: 0 0 5px #193441;
 }
 
@@ -41,7 +41,7 @@ div.input-group.searchbar {
     content: "";
 }
 
-.thead-default th{
+.thead-default th {
     color: #fcfff5;
     background-color: #193441
 }

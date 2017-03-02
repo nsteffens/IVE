@@ -1,6 +1,6 @@
 var app = angular.module("ive_cms");
 
-app.controller("scenarioDetailController", function ($scope, $window, config, $authenticationService, $scenarioService, $locationService, $relationshipService, $location, $routeParams, $sce, $filter, leafletData) {
+app.controller("scenarioDetailController", function ($scope, $window, config, $authenticationService, $scenarioService, $locationService, $relationshipService, $overlayService, $location, $routeParams, $sce, $filter, leafletData) {
 
     $scope.subsite = "detail";
     $scope.editMode = false;
@@ -18,24 +18,70 @@ app.controller("scenarioDetailController", function ($scope, $window, config, $a
         .catch(function onError(response) {
             $window.alert(response.data);
         });
-/**
- * 
- *      INIT
- * 
- */
+    /**
+     * 
+     *      INIT
+     * 
+     */
 
     $scenarioService.retrieve($routeParams.scenario_id)
         .then(function onSuccess(response) {
+            console.log(response.data);
 
             $scope.scenario = response.data;
+            $scope.scenario.videos = [];
 
             // Style date to 
             $scope.scenario.created = $filter('timestamp')($scope.scenario.created);
             $scope.scenario.tags = ['tag1,tag2,tag3'];
 
+            // Get relationship to get the belonging videos
+            $relationshipService.list_by_type('belongs_to', 'video').then(function onSuccess(response) {
+                var video_relations = response.data;
+                video_relations.forEach(function (relation) {
+                    if (relation.scenario_id == $scope.scenario.scenario_id) {
+                        $scope.scenario.videos.push(relation);
+                    }
 
-            // Get relationship to get the fitting location
+                }, this);
 
+                // Get the Location for each video and attach it
+                $relationshipService.list_by_type('recorded_at').then(function onSuccess(response) {
+                    var video_locations = response.data;
+
+                    video_locations.forEach(function (relation) {
+
+                        $scope.scenario.videos.forEach(function (video, index) {
+                            if (relation.video_id == video.video_id) {
+                                $scope.scenario.videos[index].location = relation;
+                            }
+                        })
+                    })
+
+                    console.log($scope.scenario)
+                })
+
+                // Get the Overlays for each video and attach them
+
+                $relationshipService.list_by_type('embedded_in').then(function onSuccess(response) {
+                    var overlay_relations = response.data;
+                    overlay_relations.forEach(function (relation) {
+                        var i = 0;
+                        $scope.scenario.videos.forEach(function (video, index) {
+                            
+                            if (relation.video_id == video.video_id) {
+                                $scope.scenario.videos[index].overlays = [];
+                                $scope.scenario.videos[index].overlays[i] = relation;
+                                i++;
+                            }
+                        })
+                    });
+                })
+            })
+
+            $relationshipService.list_by_type('connected_to').then(function onSuccess(response) {
+                console.log(response.data);
+            })
         });
 
 
