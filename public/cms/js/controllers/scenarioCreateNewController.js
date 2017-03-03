@@ -207,6 +207,9 @@ app.controller("scenarioCreateNewController", function ($scope, config, $authent
                 $scope.existingVideo = false;
                 $scope.currentState.scenarioVideoOverview = true;
                 $scope.currentState.addVideo = false;
+            case 'placeOverlay':
+                $scope.currentState.placeOverlay = false;
+                $scope.currentState.createOverlay = true;
         }
     }
 
@@ -272,6 +275,7 @@ app.controller("scenarioCreateNewController", function ($scope, config, $authent
 
             })
         }
+
 
         // Function that is called in the table of existing overlays
         $scope.selectOverlay = function (overlay) {
@@ -384,6 +388,9 @@ app.controller("scenarioCreateNewController", function ($scope, config, $authent
         $scope.currentState.createOverlay = false;
         $scope.currentState.placeOverlay = true;
 
+        $scope.positioningOverlay = currentOverlay;
+
+
         // At the end: Set state to createOverlay, increase index++ and set $scope.currentVideo if it's not the last video
         // If it's the last video set state to finishScenario
         $scope.submitOverlayRotation = function () {
@@ -435,6 +442,7 @@ app.controller("scenarioCreateNewController", function ($scope, config, $authent
         if ($scope.existingOverlay) {
             $scope.existingOverlay = false;
         } else {
+            $scope.searchOverlay();
             $scope.existingOverlay = true;
         }
     }

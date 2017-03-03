@@ -321,9 +321,26 @@
 <!--Step 3.2 (Place Overlay)-->
 <div class="row" ng-show="currentState.placeOverlay">
 
-    -- Place the overlay here -- // Logic to be added soon.
-    <button type="button" class="btn btn-secondary float-left" ng-click="submitOverlayRotation()">Continue <i class="fa fa-caret-right" aria-hidden="true"></i></button>
+    <div id='video_container'>
+        <h2>Place the Overlay for Video {{positioningOverlay.video_name}}</h2>
+        <videogular vg-theme="videoConfig.theme" vg-responsive="true">
+            <div id="overlay_container" ng-draggable='dragOptions'>
+            </div>
+            <vg-media vg-src="videoConfig.sources" vg-tracks="videoConfig.tracks" vg-native-controls="true"></vg-media>
+        </videogular>
 
+        <div class="btn-group float-left" aria-label="ButtonBar">
+            <button ng-click="cancel('placeOverlay')" type="button" class="btn btn-secondary float-left">
+                    <i class="fa fa-caret-left" aria-hidden="true"></i> Back
+                </button>
+        </div>
+
+        <div class="btn-group float-right" aria-label="ButtonBar">
+            <button ng-click="submitOverlayRotation()" type="button" class="btn btn-secondary float-right">
+                    <i class="fa fa-floppy-o" aria-hidden="true"></i> Save
+                </button>
+        </div>
+    </div>
 </div>
 
 <div class="row" ng-show="currentState.finishScenario">

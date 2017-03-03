@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 
-<h2>Detail View: {{scenario.name}} Scenario</h2>
+<h2 ng-hide="repositionOverlayState"> Detail View: {{scenario.name}} Scenario</h2>
 
-<div class="row">
+<div class="row" ng-hide="repositionOverlayState">
 
     <div class="col-md-6">
         <leaflet id="scenarioDetailMap" defaults="defaults" width="100%" height="35%"></leaflet>
@@ -61,25 +61,52 @@
     </div>
 </div>
 <!--End head area-->
-<hr>
-<hr>
+<hr ng-hide="repositionOverlayState">
+<hr ng-hide="repositionOverlayState">
 
-<div ng-repeat="video in scenario.videos" class="row videos">
-    <div class="col-md-3 video">
-        <p>Video: {{video.video_name}}</p>
-        <img width="250px" height="141px" src="{{video.url + '_thumbnail.png'}}"></br>
+<div ng-repeat="video in scenario.videos" class="row videos" ng-hide="repositionOverlayState">
+    <div class="col-md-4 video">
+        <p>Video #{{$index + 1}}: <br> {{video.video_name}}</p>
+        <img width="250px" height="141px" src="{{video.video_url + '_thumbnail.png'}}"></br>
         <a href="" ng-click="redirect('/videos/'+ video.video_id)"><i class="fa fa-pencil-square-o" aria-hidden="true"></i></a>
         <a href="" ng-click="deleteVideo(video.video_id)"><i class="fa fa-trash-o" aria-hidden="true"></i></a>
     </div>
     <div ng-repeat="overlay in video.overlays" class="col-md-3 offset-md-2 overlay">
-        <p>Overlay #1</p>
-        <img width="250px" height="141px" src="{{video.url + '_thumbnail.png'}}"></br>
+        <p>Overlay #{{$index + 1}}: <br> {{overlay.overlay_name}}</p>
+        <img width="250px" height="141px" src="{{video.video_url + '_thumbnail.png'}}"></br>
         <a href="" ng-click="redirect('/overlays/'+ overlay.overlay_id)"><i class="fa fa-pencil-square-o" aria-hidden="true"></i></a>
-        <a href="" ng-click="deleteOverlay(overlay.overlay_id)"><i class="fa fa-trash-o" aria-hidden="true"></i></a>
-        <a href="" ng-click="redirect('/videos/'+ video.video_id)"><i class="fa fa-arrows" aria-hidden="true"></i></a>
+        <a href="" ng-click="deleteOverlay(video.video_id, overlay.overlay_id)"><i class="fa fa-trash-o" aria-hidden="true"></i></a>
+        <a href="" ng-click="repositionOverlay(overlay)"><i class="fa fa-arrows" aria-hidden="true"></i></a>
     </div>
     <div ng-hide="video.multipleOverlays" class="col-md-3 addOverlay">
         <a ng-click="redirect('/overlays/create-new')" href="">Add Overlay</br>
         <i class="fa fa-plus-square-o fa-4x" aria-hidden="true"></i></a>
     </div>
+</div>
+
+<div ng-show="repositionOverlayState">
+
+    <h2>Place the Overlay for Video {{positioningOverlay.video_name}}</h2>
+    <div id='video_container'>
+        <videogular vg-theme="videoConfig.theme" vg-responsive="true">
+            <div id="overlay_container" ng-draggable='dragOptions'>
+            </div>
+            <vg-media vg-src="videoConfig.sources" vg-tracks="videoConfig.tracks" vg-native-controls="true"></vg-media>
+        </videogular>
+
+        <div class="btn-group float-left" aria-label="ButtonBar">
+            <button ng-click="redirect('/scenarios/' + scenario.scenario_id)" type="button" class="btn btn-secondary float-left">
+                    <i class="fa fa-caret-left" aria-hidden="true"></i> Back
+                </button>
+        </div>
+
+        <div class="btn-group float-right" aria-label="ButtonBar">
+            <button ng-click="saveOverlayPosition()" type="button" class="btn btn-secondary float-right">
+                    <i class="fa fa-floppy-o" aria-hidden="true"></i> Save
+                </button>
+        </div>
+    </div>
+
+
+
 </div>

@@ -1,6 +1,6 @@
 var app = angular.module("ive_cms");
 
-app.controller("scenarioDetailController", function ($scope, $window, config, $authenticationService, $scenarioService, $locationService, $relationshipService, $overlayService, $location, $routeParams, $sce, $filter, leafletData) {
+app.controller("scenarioDetailController", function ($scope, $window, $document, config, $authenticationService, $scenarioService, $locationService, $relationshipService, $overlayService, $location, $routeParams, $sce, $filter, leafletData) {
 
     $scope.subsite = "detail";
     $scope.editMode = false;
@@ -218,20 +218,20 @@ app.controller("scenarioDetailController", function ($scope, $window, config, $a
         console.log(video_id);
 
         if ($window.confirm(`You are going to remove this Video from the Scenario. Are you sure? THIS WILL NOT BE REVERSIBLE!`)) {
-            if ($window.confirm('Are you really, really sure?')) { 
+            if ($window.confirm('Are you really, really sure?')) {
                 var video_to_delete;
 
                 // Remove Video from the (over)view
-                $scope.scenario.videos.forEach(function(video, index){
-                    
-                    if(video.video_id == video_id){
+                $scope.scenario.videos.forEach(function (video, index) {
+
+                    if (video.video_id == video_id) {
                         video_to_delete = video;
                         $scope.scenario.videos.splice(index, 1);
                     }
                 })
 
                 // Remove belongs_to relation
-                // Disabled -- too dangerous ;-)
+                // Disabled -- too dangerous for now ;-)
                 // $relationshipService.remove(video_to_delete.relationship_id).then(function(response){
 
                 // })
@@ -240,42 +240,136 @@ app.controller("scenarioDetailController", function ($scope, $window, config, $a
 
     }
 
-    $scope.deleteOverlay = function (overlay_id){
+    $scope.deleteOverlay = function (video_id, overlay_id) {
+
+        if ($window.confirm(`You are going to remove this Overlay from the Video. Are you sure? THIS WILL NOT BE REVERSIBLE!`)) {
+            if ($window.confirm('Are you really, really sure?')) {
+                $scope.scenario.videos.forEach(function (video, index) {
+                    if (video.video_id == video_id) {
+                        $scope.scenario.videos[index].overlays.forEach(function (overlay, overlayIndex) {
+                            if (overlay.overlay_id == overlay_id) {
+                                $scope.scenario.videos[index].overlays.splice(overlayIndex, 1);
+
+                                // Remove embedded_in relation
+                                // Disabled -- too dangerous for now ;-)
+                                // $relationshipService.remove(overlay.relationship_id).then(function onSuccess(response) {
+                                //     console.log(response);
+                                // })
+                            }
+                        })
+                    }
+                })
+
+            }
+        }
 
     }
-    // $scope.deleteVideo = function () {
 
-    //     if ($window.confirm(`You are going to delete the Video. Are you sure? THIS WILL NOT BE REVERSIBLE!`)) {
-    //         if ($window.confirm('Are you really, really sure?')) {
+    $scope.repositionOverlay = function (overlay) {
+        $scope.repositionOverlayState = true;
+        console.log(overlay);
 
-    //             $videoService.remove($scope.video.video_id).then(function (response) {
-    //                 console.log('Video removed');
-    //             });
+        $scope.positioningOverlay = overlay;
 
-    //             // Delete relation to the location
-    //             $relationshipService.list_by_type('recorded_at').then(function (relations) {
+        var videoExtension = $scope.positioningOverlay.video_url.split('.')[1];
 
-    //                 relations.data.forEach(function (relation) {
-    //                     if (relation.video_id == $scope.video_id) {
-    //                         $relationshipService.remove(relation.relationship_id).then(function (response) {
+        // Wenn keine extension in der URL war..
+        if (videoExtension == null) {
+            videoExtension = 'mp4';
+            $scope.positioningOverlay.video_url += '.mp4';
+        }
 
-    //                             if (response.status == 200) {
-    //                                 $scope.redirect('/videos');
-    //                             } else {
-    //                                 console.log(response);
-    //                                 $scope.redirect('/videos');
-    //                             }
-    //                         })
-    //                     }
-    //                 }, this);
-    //                 // Fallback if there is no relation to be deleted - shouldn't be the case in production though..
-    //                 $scope.redirect('/videos');
-    //             })
+        $scope.videoConfig = {
+            sources: [
+                { src: $sce.trustAsResourceUrl($scope.positioningOverlay.video_url), type: "video/" + videoExtension }
+            ],
+            tracks: [],
+            theme: "../bower_components/videogular-themes-default/videogular.css",
+        }
+    }
 
-    //         }
-    //     }
-    // }
+    $scope.saveOverlayPosition = function () {
+        // This will be implemented when the positioning is done correctly..
 
-
+        console.log('Overlay Saving Simulation...');
+        $scope.redirect('/scenarios/' + $scope.scenario.scenario_id);
+        $scope.repositionOverlayState = false;
+    }
 
 });
+
+// Directive to handle the overlay positioning mockup
+app.directive('ngDraggable', function ($document) {
+    return {
+        restrict: 'A',
+        scope: {
+            dragOptions: '=ngDraggable'
+        },
+        link: function (scope, elem, attr) {
+            var startX, startY, x = 0, y = 0,
+                start, stop, drag, container;
+
+            var width = elem[0].offsetWidth,
+                height = elem[0].offsetHeight;
+
+            // Obtain drag options
+            if (scope.dragOptions) {
+                start = scope.dragOptions.start;
+                drag = scope.dragOptions.drag;
+                stop = scope.dragOptions.stop;
+                var id = scope.dragOptions.container;
+                if (id) {
+                    container = document.getElementById(id).getBoundingClientRect();
+                }
+            }
+
+            // Bind mousedown event
+            elem.on('mousedown', function (e) {
+                e.preventDefault();
+                startX = e.clientX - elem[0].offsetLeft;
+                startY = e.clientY - elem[0].offsetTop;
+                $document.on('mousemove', mousemove);
+                $document.on('mouseup', mouseup);
+                if (start) start(e);
+            });
+
+            // Handle drag event
+            function mousemove(e) {
+                y = e.clientY - startY;
+                x = e.clientX - startX;
+                setPosition();
+                if (drag) drag(e);
+            }
+
+            // Unbind drag events
+            function mouseup(e) {
+                $document.unbind('mousemove', mousemove);
+                $document.unbind('mouseup', mouseup);
+                if (stop) stop(e);
+            }
+
+            // Move element, within container if provided
+            function setPosition() {
+                if (container) {
+                    if (x < container.left) {
+                        x = container.left;
+                    } else if (x > container.right - width) {
+                        x = container.right - width;
+                    }
+                    if (y < container.top) {
+                        y = container.top;
+                    } else if (y > container.bottom - height) {
+                        y = container.bottom - height;
+                    }
+                }
+
+                elem.css({
+                    top: y + 'px',
+                    left: x + 'px'
+                });
+            }
+        }
+    }
+
+})
+
