@@ -74,6 +74,11 @@ app.config(function ($routeProvider, $locationProvider, config) {
             controller: "videoDetailController",
             css: "css/templates/videos/detail.css"
         })
+        .when("/overlays", {
+            templateUrl: "js/templates/overlays/overview.html",
+            controller: "overlayOverviewController",
+            css: "css/templates/overlays/overview.css"
+        })
 
         // Redirect to home page
         .otherwise({
