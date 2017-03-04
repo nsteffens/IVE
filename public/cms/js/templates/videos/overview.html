@@ -4,7 +4,7 @@
         <!--Header: Search field and View Switcher-->
         <div class="btn-toolbar justify-content-between" role="toolbar" aria-label="Toolbar">
             <div class="input-group searchbar">
-                <input type="text" class="form-control" placeholder="Search for tags (#), names or file names...">
+                <input type="text" ng-model="searchTerm" ng-change="search()" class="form-control" placeholder="Search for tags (#), names or file names...">
                 <span class="input-group-btn">
         <button class="btn btn-secondary" type="button">Go!</button>
       </span>

@@ -89,5 +89,26 @@ app.controller("scenarioOverviewController", function ($scope, $window, $scenari
     }
 
 
+    $scope.search = function () {
+        $scenarioService.list()
+            .then(function onSuccess(response) {
+                var allScenarios = response.data;
+                var searchResults = [];
+                if ($scope.searchTerm != null && $scope.searchTerm != "") {
+                    var normalized = $scope.searchTerm.toLowerCase();
+                    for (var i = 0; i < $scope.scenarios.length; i++) {
+                        var match = false;
+                        var current_scenario = $scope.scenarios[i];
+                        if (current_scenario.name.toLowerCase().search('(' + normalized + ')') != -1) match = true;
+                        if (current_scenario.description.toLowerCase().search('(' + normalized + ')') != -1) match = true;
+                        if (match) searchResults.push(current_scenario);
+                    }
+                    $scope.scenarios = searchResults;
+                } else {
+                    $scope.scenarios = allScenarios;
+                }
+            })
+    }
+
 
 });

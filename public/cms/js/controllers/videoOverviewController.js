@@ -2,7 +2,7 @@ var app = angular.module("ive_cms");
 
 app.controller("videoOverviewController", function ($scope, $window, config, $videoService, $location, $authenticationService, $relationshipService) {
 
-    // $scope.active = "scenarios";
+    // $scope.active = "videos";
     $scope.subsite = "overview";
     $scope.portraitView = true;
 
@@ -44,7 +44,7 @@ app.controller("videoOverviewController", function ($scope, $window, config, $vi
         if ($window.confirm(`You are going to delete the Video. Are you sure? THIS WILL NOT BE REVERSIBLE!`)) {
             if ($window.confirm('Are you really, really sure?')) {
 
-                $videoService.remove(video_id).then(function(response){
+                $videoService.remove(video_id).then(function (response) {
                     console.log('Video removed');
                 });
                 // Delete the video from the videos array
@@ -68,6 +68,27 @@ app.controller("videoOverviewController", function ($scope, $window, config, $vi
             }
         }
 
+    }
+
+    $scope.search = function () {
+        $videoService.list()
+            .then(function onSuccess(response) {
+                var allVideos = response.data;
+                var searchResults = [];
+                if ($scope.searchTerm != null && $scope.searchTerm != "") {
+                    var normalized = $scope.searchTerm.toLowerCase();
+                    for (var i = 0; i < $scope.videos.length; i++) {
+                        var match = false;
+                        var current_video = $scope.videos[i];
+                        if (current_video.name.toLowerCase().search('(' + normalized + ')') != -1) match = true;
+                        if (current_video.description.toLowerCase().search('(' + normalized + ')') != -1) match = true;
+                        if (match) searchResults.push(current_video);
+                    }
+                    $scope.videos = searchResults;
+                } else {
+                    $scope.videos = allVideos;
+                }
+            })
     }
 
 
