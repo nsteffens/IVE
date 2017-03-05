@@ -126,8 +126,8 @@
 					</li>
 					<li ng-show="isActive('/overlays')" class="nav-item nav-subitem">
 						<ul>
-							<li class="nav-sublink"><span>Overview</span></li>
-							<li class="nav-sublink"><span>Create new</span></li>
+							<li class="nav-sublink"><span ng-click="redirect('/overlays')">Overview</span></li>
+							<li class="nav-sublink"><span ng-click="redirect('/overlays/create-new')">Create new</span></li>
 						</ul>
 					</li>
 					<li class="nav-item">
@@ -138,8 +138,8 @@
 					</li>
 					<li ng-show="isActive('/locations')" class="nav-item nav-subitem">
 						<ul>
-							<li class="nav-sublink"><span>Overview</span></li>
-							<li class="nav-sublink"><span>Create new</span></li>
+							<li class="nav-sublink"><span ng-click="redirect('/locations')">Overview</span></li>
+							<li class="nav-sublink"><span ng-click="redirect('/locations/create-new')">Create new</span></li>
 						</ul>
 					</li>
 					<li class="nav-item">
@@ -189,6 +189,8 @@
 	<script src="js/controllers/videoCreateNewController.js"></script>
 
 	<script src="js/controllers/overlayOverviewController.js"></script>
+	<script src="js/controllers/overlayCreateNewController.js"></script>
+	<script src="js/controllers/overlayDetailController.js"></script>
 
 
 </body>

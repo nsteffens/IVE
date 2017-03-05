@@ -81,6 +81,7 @@ app.controller("overlayOverviewController", function ($scope, $window, config, $
                     }
                     $scope.overlays = searchResults;
                 } else {
+                    console.log(allOverlays);
                     $scope.overlays = allOverlays;
                 }
             })

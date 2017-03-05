@@ -79,6 +79,16 @@ app.config(function ($routeProvider, $locationProvider, config) {
             controller: "overlayOverviewController",
             css: "css/templates/overlays/overview.css"
         })
+        .when("/overlays/create-new", {
+            templateUrl: "js/templates/overlays/create-new.html",
+            controller: "overlayCreateNewController",
+            css: "css/templates/overlays/create-new.css"
+        })
+        .when("/overlays/:overlay_id", {
+            templateUrl: "js/templates/overlays/detail.html",
+            controller: "overlayDetailController",
+            css: "css/templates/overlays/detail.css"
+        })
 
         // Redirect to home page
         .otherwise({
