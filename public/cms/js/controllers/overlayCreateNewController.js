@@ -65,21 +65,20 @@ app.controller("overlayCreateNewController", function ($scope, $window, config, 
             $scope.newOverlay.tags_parsed = tagArray;
         }
 
-        var urlRegExp = new RegExp('^(https?:\\/\\/)?' + // protocol
-            '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.?)+[a-z]{2,}|' + // domain name
-            '((\\d{1,3}\\.){3}\\d{1,3}))' + // OR ip (v4) address
-            '(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*' + // port and path
-            '(\\?[;&a-z\\d%_.~+=-]*)?' + // query string
-            '(\\#[-a-z\\d_]*)?$', 'i'); // fragment locator
+        if ($scope.overlay.category == 'website') {
+            var urlRegExp = new RegExp('^(https?:\\/\\/)?' + // protocol
+                '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.?)+[a-z]{2,}|' + // domain name
+                '((\\d{1,3}\\.){3}\\d{1,3}))' + // OR ip (v4) address
+                '(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*' + // port and path
+                '(\\?[;&a-z\\d%_.~+=-]*)?' + // query string
+                '(\\#[-a-z\\d_]*)?$', 'i'); // fragment locator
 
-        console.log(urlRegExp.test($scope.newOverlay.url));
-
-        if (!urlRegExp.test($scope.newOverlay.url)) {
-            url_input.parent().parent().addClass('has-danger')
-            url_input.addClass('form-control-danger');
-            isValid = false;
+            if (!urlRegExp.test($scope.newOverlay.url)) {
+                url_input.parent().parent().addClass('has-danger')
+                url_input.addClass('form-control-danger');
+                isValid = false;
+            }
         }
-
         return isValid;
 
     }
