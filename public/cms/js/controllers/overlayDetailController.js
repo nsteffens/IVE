@@ -39,8 +39,6 @@ app.controller("overlayDetailController", function ($scope, $routeParams, $windo
                 }
             }, this);
         })
-
-
     })
 
     // Function that is triggered, when the edit button has been pressed
@@ -59,7 +57,6 @@ app.controller("overlayDetailController", function ($scope, $routeParams, $windo
             type_input.removeAttr('disabled');
         }
     }
-
     // Submit the overlay
     $scope.saveOverlay = function () {
         if (validate()) {
@@ -117,7 +114,6 @@ app.controller("overlayDetailController", function ($scope, $routeParams, $windo
         return isValid;
 
     }
-
     /**
      * [redirect description]
      * @param  {[type]} path [description]

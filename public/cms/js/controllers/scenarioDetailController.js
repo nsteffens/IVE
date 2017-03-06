@@ -59,7 +59,9 @@ app.controller("scenarioDetailController", function ($scope, $window, $document,
                                 if ($scope.scenario.videos[index].location.location_type == 'outdoor') {
                                     var location = new L.latLng($scope.scenario.videos[index].location.location_lat, $scope.scenario.videos[index].location.location_lng);
                                     var popupContent = `Video: ${$scope.scenario.videos[index].video_name} <br> Location: ${$scope.scenario.videos[index].location.location_name}`;
-                                    var videoMarker = new L.Marker(location, { clickable: true }).bindPopup(popupContent);
+                                    var videoMarker = new L.Marker(location, {
+                                        clickable: true
+                                    }).bindPopup(popupContent);
                                     videoMarkers.push(videoMarker);
                                 }
                             }
@@ -68,7 +70,10 @@ app.controller("scenarioDetailController", function ($scope, $window, $document,
 
                     leafletData.getMap('scenarioDetailMap').then(function (map) {
                         var featureGroup = new L.featureGroup(videoMarkers).addTo(map);
-                        map.fitBounds(featureGroup.getBounds(), { animate: false, padding: L.point(50, 50) })
+                        map.fitBounds(featureGroup.getBounds(), {
+                            animate: false,
+                            padding: L.point(50, 50)
+                        })
                     });
 
 
@@ -280,9 +285,10 @@ app.controller("scenarioDetailController", function ($scope, $window, $document,
         }
 
         $scope.videoConfig = {
-            sources: [
-                { src: $sce.trustAsResourceUrl($scope.positioningOverlay.video_url), type: "video/" + videoExtension }
-            ],
+            sources: [{
+                src: $sce.trustAsResourceUrl($scope.positioningOverlay.video_url),
+                type: "video/" + videoExtension
+            }],
             tracks: [],
             theme: "../bower_components/videogular-themes-default/videogular.css",
         }
@@ -306,7 +312,8 @@ app.directive('ngDraggable', function ($document) {
             dragOptions: '=ngDraggable'
         },
         link: function (scope, elem, attr) {
-            var startX, startY, x = 0, y = 0,
+            var startX, startY, x = 0,
+                y = 0,
                 start, stop, drag, container;
 
             var width = elem[0].offsetWidth,
@@ -372,4 +379,3 @@ app.directive('ngDraggable', function ($document) {
     }
 
 })
-

@@ -45,9 +45,9 @@ app.config(function ($routeProvider, $locationProvider, config) {
             css: "css/templates/home.css"
         })
         .when("/scenarios", {
-             templateUrl: "js/templates/scenarios/overview.html",
-             controller: "scenarioOverviewController",
-             css: "css/templates/scenarios/overview.css"
+            templateUrl: "js/templates/scenarios/overview.html",
+            controller: "scenarioOverviewController",
+            css: "css/templates/scenarios/overview.css"
         })
         .when("/scenarios/create-new", {
             templateUrl: "js/templates/scenarios/create-new.html",
@@ -88,6 +88,21 @@ app.config(function ($routeProvider, $locationProvider, config) {
             templateUrl: "js/templates/overlays/detail.html",
             controller: "overlayDetailController",
             css: "css/templates/overlays/detail.css"
+        })
+        .when("/locations", {
+            templateUrl: "js/templates/locations/overview.html",
+            controller: "locationOverviewController",
+            css: "css/templates/locations/overview.css"
+        })
+        .when("/locations/create-new", {
+            templateUrl: "js/templates/locations/create-new.html",
+            controller: "locationCreateNewController",
+            css: "css/templates/locations/create-new.css"
+        })
+        .when("/locations/:location_id", {
+            templateUrl: "js/templates/locations/detail.html",
+            controller: "locationDetailController",
+            css: "css/templates/locations/detail.css"
         })
 
         // Redirect to home page

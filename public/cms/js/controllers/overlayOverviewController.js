@@ -7,7 +7,6 @@ app.controller("overlayOverviewController", function ($scope, $window, config, $
     $scope.portraitView = true;
 
     // Authenticate with the backend to get permissions to delete content
-
     $authenticationService.authenticate(config.backendLogin)
         .then(function onSuccess(response) {
             $authenticationService.set(response.data);

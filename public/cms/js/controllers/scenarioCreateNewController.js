@@ -3,12 +3,12 @@ var app = angular.module("ive_cms");
 app.controller("scenarioCreateNewController", function ($scope, config, $authenticationService, $locationService, $relationshipService, $scenarioService, $videoService, $overlayService, $location, $document, leafletData, Upload, $sce) {
 
     $scope.currentState = {
-        general: true,          // General Information Input Screen
-        addVideo: false,        // Screen where a new video is created
-        scenarioVideoOverview: false,  // Overview over the scenario's videos
-        createOverlay: false,       // Overlay creation
-        placeOverlay: false,        // Overlay placement
-        finishScenario: false       // Scenario finish Screen
+        general: true, // General Information Input Screen
+        addVideo: false, // Screen where a new video is created
+        scenarioVideoOverview: false, // Overview over the scenario's videos
+        createOverlay: false, // Overlay creation
+        placeOverlay: false, // Overlay placement
+        finishScenario: false // Scenario finish Screen
     };
 
     $scope.currentState.general = true;
@@ -122,7 +122,10 @@ app.controller("scenarioCreateNewController", function ($scope, config, $authent
         }
 
         if ($scope.existingLocation) {
-            uploadVideoData.location = { existing_name: $scope.newVideo.location.name, newVideo: $scope.newVideo };
+            uploadVideoData.location = {
+                existing_name: $scope.newVideo.location.name,
+                newVideo: $scope.newVideo
+            };
             newLocation = $scope.newVideo.location;
 
         } else {
@@ -137,13 +140,16 @@ app.controller("scenarioCreateNewController", function ($scope, config, $authent
                     newLocation = response.data;
                 });
 
-            uploadVideoData.location = { newLocation: $scope.newVideo.location, newVideo: $scope.newVideo }
+            uploadVideoData.location = {
+                newLocation: $scope.newVideo.location,
+                newVideo: $scope.newVideo
+            }
         }
 
         Upload.upload({
-            url: '/cms/videos/upload',
-            data: uploadVideoData
-        })
+                url: '/cms/videos/upload',
+                data: uploadVideoData
+            })
             .progress(function (evt) {
                 var progressPercentage = parseInt(100.0 * evt.loaded / evt.total);
 
@@ -172,7 +178,7 @@ app.controller("scenarioCreateNewController", function ($scope, config, $authent
                     var recorded_at = {
                         video_id: createdVideo.data.video_id,
                         location_id: newLocation.location_id,
-                        preferred: false    //What does this parameter do?
+                        preferred: false //What does this parameter do?
                     }
 
                     $relationshipService.create('recorded_at', recorded_at).then(function (createdRelation) {
@@ -237,9 +243,10 @@ app.controller("scenarioCreateNewController", function ($scope, config, $authent
 
         // Init with the first Video
         $scope.videoConfig = {
-            sources: [
-                { src: $sce.trustAsResourceUrl($scope.currentVideo.url), type: "video/" + videoExtension }
-            ],
+            sources: [{
+                src: $sce.trustAsResourceUrl($scope.currentVideo.url),
+                type: "video/" + videoExtension
+            }],
             tracks: [],
             theme: "../bower_components/videogular-themes-default/videogular.css"
         }
@@ -301,7 +308,10 @@ app.controller("scenarioCreateNewController", function ($scope, config, $authent
                 $scope.currentVideo.url += '.mp4';
             }
             // Change Video Preview
-            $scope.videoConfig.sources = [{ src: $sce.trustAsResourceUrl($scope.currentVideo.url), type: "video/" + videoExtension }];
+            $scope.videoConfig.sources = [{
+                src: $sce.trustAsResourceUrl($scope.currentVideo.url),
+                type: "video/" + videoExtension
+            }];
         }
     }
 
@@ -412,7 +422,10 @@ app.controller("scenarioCreateNewController", function ($scope, config, $authent
                     $scope.currentVideo.url += '.mp4';
                 }
                 // Adjust implemented video url
-                $scope.videoConfig.sources = [{ src: $sce.trustAsResourceUrl($scope.currentVideo.url), type: "video/" + videoExtension }];
+                $scope.videoConfig.sources = [{
+                    src: $sce.trustAsResourceUrl($scope.currentVideo.url),
+                    type: "video/" + videoExtension
+                }];
 
                 $scope.currentState.placeOverlay = false;
                 $scope.currentState.createOverlay = true;
@@ -633,7 +646,10 @@ app.controller("scenarioCreateNewController", function ($scope, config, $authent
                 }
 
                 $scope.featureGroup = L.featureGroup(locationMarkers).addTo(map);
-                map.fitBounds($scope.featureGroup.getBounds(), { animate: false, padding: L.point(50, 50) });
+                map.fitBounds($scope.featureGroup.getBounds(), {
+                    animate: false,
+                    padding: L.point(50, 50)
+                });
 
                 // Add colored marker to the center
                 var myIcon = new L.Icon({
@@ -697,7 +713,9 @@ app.controller("scenarioCreateNewController", function ($scope, config, $authent
                     if (location.name.search($scope.searchLocationTerm) != -1) {
 
                         var popupContent = `Location: ${location.name}`;
-                        var marker = new L.Marker(L.latLng(location.lat, location.lng), { clickable: true }).bindPopup(popupContent);
+                        var marker = new L.Marker(L.latLng(location.lat, location.lng), {
+                            clickable: true
+                        }).bindPopup(popupContent);
                         marker.on('click', function (e) {
                             $scope.newVideo.location.lat = e.latlng.lat;
                             $scope.newVideo.location.lng = e.latlng.lng;
@@ -716,7 +734,10 @@ app.controller("scenarioCreateNewController", function ($scope, config, $authent
 
                     map.removeLayer($scope.featureGroup);
                     $scope.featureGroup = L.featureGroup(searchLocationMarkers).addTo(map);
-                    map.fitBounds($scope.featureGroup.getBounds(), { animate: false, padding: L.point(50, 50) });
+                    map.fitBounds($scope.featureGroup.getBounds(), {
+                        animate: false,
+                        padding: L.point(50, 50)
+                    });
 
                 })
 
@@ -753,7 +774,10 @@ app.controller("scenarioCreateNewController", function ($scope, config, $authent
                                 })
 
                                 var popupContent = `Selected Video: <br> Video Name: ${relation.video_name} <br> Description: ${relation.video_description} `;
-                                var marker = new L.Marker(L.latLng(relation.location_lat, relation.location_lng), { clickable: true, icon: myIcon }).bindPopup(popupContent);
+                                var marker = new L.Marker(L.latLng(relation.location_lat, relation.location_lng), {
+                                    clickable: true,
+                                    icon: myIcon
+                                }).bindPopup(popupContent);
 
                                 marker.on('click', function (e) {
                                     $scope.newVideo = video;
@@ -769,7 +793,10 @@ app.controller("scenarioCreateNewController", function ($scope, config, $authent
                                         map.removeLayer($scope.featureGroup);
                                     }
                                     $scope.featureGroup = new L.featureGroup(videoMarkers).addTo(map);
-                                    map.fitBounds($scope.featureGroup.getBounds(), { animate: false, padding: L.point(50, 50) });
+                                    map.fitBounds($scope.featureGroup.getBounds(), {
+                                        animate: false,
+                                        padding: L.point(50, 50)
+                                    });
                                 })
                             }
                         }
@@ -800,7 +827,10 @@ app.controller("scenarioCreateNewController", function ($scope, config, $authent
                                 })
 
                                 var popupContent = `Selected Video: <br> Video Name: ${relation.video_name} <br> Description: ${relation.video_description} `;
-                                var marker = new L.Marker(L.latLng(relation.location_lat, relation.location_lng), { clickable: true, icon: myIcon }).bindPopup(popupContent);
+                                var marker = new L.Marker(L.latLng(relation.location_lat, relation.location_lng), {
+                                    clickable: true,
+                                    icon: myIcon
+                                }).bindPopup(popupContent);
 
                                 marker.on('click', function (e) {
 
@@ -834,7 +864,10 @@ app.controller("scenarioCreateNewController", function ($scope, config, $authent
                             })
 
                             var popupContent = `Selected Video: <br> Video Name: ${relation.video_name} <br> Description: ${relation.video_description} `;
-                            var marker = new L.Marker(L.latLng(relation.location_lat, relation.location_lng), { clickable: true, icon: myIcon }).bindPopup(popupContent);
+                            var marker = new L.Marker(L.latLng(relation.location_lat, relation.location_lng), {
+                                clickable: true,
+                                icon: myIcon
+                            }).bindPopup(popupContent);
                             marker.on('click', function (e) {
 
                                 $scope.newVideo = {
@@ -860,7 +893,10 @@ app.controller("scenarioCreateNewController", function ($scope, config, $authent
                     leafletData.getMap('addExistingVideoMap').then(function (map) {
                         map.removeLayer($scope.featureGroup);
                         $scope.featureGroup = new L.featureGroup(searchVideoMarkers).addTo(map);
-                        map.fitBounds($scope.featureGroup.getBounds(), { animate: false, padding: L.point(50, 50) });
+                        map.fitBounds($scope.featureGroup.getBounds(), {
+                            animate: false,
+                            padding: L.point(50, 50)
+                        });
                     })
                 }
             })
