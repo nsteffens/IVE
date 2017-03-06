@@ -23,6 +23,8 @@ app.controller("scenarioCreateNewController", function ($scope, config, $authent
         // created: null,
     }
 
+    var scenarioCreated = false;
+
     // Authenticate with the backend to get permissions to create content
     $authenticationService.authenticate(config.backendLogin)
         .then(function onSuccess(response) {
@@ -44,8 +46,7 @@ app.controller("scenarioCreateNewController", function ($scope, config, $authent
     // Method to sumbit the general Scenario information, send it to the
     // server and handle the created object
     $scope.submitGeneral = function () {
-        if ($scope.validateScenario()) {
-
+        if ($scope.validateScenario() && !scenarioCreated) {
 
             // Send Scenario to Service 
             // Include Tags here when implemented
@@ -56,7 +57,11 @@ app.controller("scenarioCreateNewController", function ($scope, config, $authent
                     $scope.currentState.general = false;
                     $scope.currentState.scenarioVideoOverview = true;
                     angular.element('#step2').addClass('active');
+                    scenarioCreated = true;
                 })
+        } else {
+            $scope.currentState.general = false;
+            $scope.currentState.scenarioVideoOverview = true;
         }
     }
 
@@ -209,13 +214,23 @@ app.controller("scenarioCreateNewController", function ($scope, config, $authent
             case 'createOverlay':
                 $scope.currentState.createOverlay = false;
                 $scope.currentState.addVideo = true;
+                return;
             case 'addVideo':
                 $scope.existingVideo = false;
-                $scope.currentState.scenarioVideoOverview = true;
                 $scope.currentState.addVideo = false;
+                $scope.currentState.scenarioVideoOverview = true;
+                $scope.currentState.createOverlay = false;
+                return;
             case 'placeOverlay':
                 $scope.currentState.placeOverlay = false;
                 $scope.currentState.createOverlay = true;
+                return;
+            case 'finishScenario':
+                $scope.currentState.finishScenario = false;
+                $scope.currentState.scenarioVideoOverview = true;
+                console.log($scope.currentState);
+                $scope.$apply();
+                return;
         }
     }
 
@@ -403,37 +418,47 @@ app.controller("scenarioCreateNewController", function ($scope, config, $authent
 
         // At the end: Set state to createOverlay, increase index++ and set $scope.currentVideo if it's not the last video
         // If it's the last video set state to finishScenario
-        $scope.submitOverlayRotation = function () {
 
-            // Handle stuff here, read out from three.js or so..
-            if ($scope.currentVideoIndex == $scope.newScenario.videos.length - 1) {
-                $scope.currentState.placeOverlay = false;
-                $scope.currentState.finishScenario = true;
-            } else {
-                $scope.currentVideoIndex++;
-                $scope.currentVideo = $scope.newScenario.videos[$scope.currentVideoIndex];
-
-
-                var videoExtension = $scope.currentVideo.url.split('.')[1];
-
-                // Wenn keine extension in der URL war..
-                if (videoExtension == null) {
-                    videoExtension = 'mp4';
-                    $scope.currentVideo.url += '.mp4';
-                }
-                // Adjust implemented video url
-                $scope.videoConfig.sources = [{
-                    src: $sce.trustAsResourceUrl($scope.currentVideo.url),
-                    type: "video/" + videoExtension
-                }];
-
-                $scope.currentState.placeOverlay = false;
-                $scope.currentState.createOverlay = true;
-            }
-
-        }
     }
 
+    $scope.submitOverlayRotation = function () {
+
+        // Handle stuff here, read out from three.js or so..
+        if ($scope.currentVideoIndex == $scope.newScenario.videos.length - 1) {
+            $scope.currentState.placeOverlay = false;
+            $scope.currentState.finishScenario = true;
+        } else {
+            $scope.currentVideoIndex++;
+            $scope.currentVideo = $scope.newScenario.videos[$scope.currentVideoIndex];
+
+            var videoExtension = $scope.currentVideo.url.split('.')[1];
+
+            // Wenn keine extension in der URL war..
+            if (videoExtension == null) {
+                videoExtension = 'mp4';
+                $scope.currentVideo.url += '.mp4';
+            }
+            // Adjust implemented video url
+            $scope.videoConfig.sources = [{
+                src: $sce.trustAsResourceUrl($scope.currentVideo.url),
+                type: "video/" + videoExtension
+            }];
+
+            $scope.currentState.placeOverlay = false;
+            $scope.currentState.createOverlay = true;
+
+
+            /**
+             *  
+             * =============
+             * To be implemented:
+             * =============
+             * 
+             * Create embedded_in relation for $scope.currentVideo.overlay and $scope.currentVideo here.
+             * 
+             */
+        }
+    }
 
     /**
      * 
@@ -443,8 +468,52 @@ app.controller("scenarioCreateNewController", function ($scope, config, $authent
      * 
      */
     $scope.finishScenario = function () {
+
+        console.log($scope.newScenario);
+
+        $scope.submitScenario();
+
         console.log('Finished!');
         $scope.redirect('/scenarios');
+    }
+
+    $scope.submitScenario = function () {
+
+        // Set the first Video's location as the startLocation of our scenario
+        $relationshipService.list_by_type('recorded_at').then(function onSuccess(response) {
+            var relations = response.data;
+            var firstVideo = $scope.newScenario.videos[0];
+            relations.forEach(function (relation) {
+                if (relation.video_id == firstVideo.video_id) {
+                    $relationshipService.create('belongs_to',   {
+                        scenario_id: $scope.newScenario.scenario_id,
+                        location_id: relation.location_id
+                    }, 'location')
+                }
+            }, this);
+        })
+
+        // Add Video belongs_to relation -- for it's overlay, too if neccessary
+
+        // NOT WORKING CORRECTLY: There might be an error at the backend handling two quickly incoming requests
+        // Relations are created but it's just a duplicate of the first one..
+        $scope.newScenario.videos.forEach(function (video, index) {
+            console.log('CREATING RELATION FOR:')
+            console.log(video)
+            $relationshipService.create('belongs_to', {
+                scenario_id: $scope.newScenario.scenario_id,
+                video_id: $scope.newScenario.videos[index].video_id
+            }, 'video').then(function onSuccess() {
+
+                // Create overlay relations
+                if (video.overlay) {
+                    $relationshipService.create('belongs_to', {
+                        scenario_id: $scope.newScenario.scenario_id,
+                        overlay_id: $scope.newScenario.videos[index].overlay.overlay_id
+                    }, 'overlay')
+                }
+            })
+        }, this);
     }
 
     /**
@@ -506,9 +575,9 @@ app.controller("scenarioCreateNewController", function ($scope, config, $authent
             desc_input.addClass('form-control-danger');
             isValid = false;
         }
-
+        console.log($scope.newScenario);
         // Put tags in array
-        if ($scope.newScenario.tags != "") {
+        if ($scope.newScenario.tags != "" && $scope.newScenario.tags != null) {
             // Parse array, grab them by the comma and remove the #
             var tagArray = [];
             $scope.newScenario.tags.split(', ').forEach(function (element) {
@@ -612,7 +681,6 @@ app.controller("scenarioCreateNewController", function ($scope, config, $authent
     });
 
     $scope.setupAddNewVideoMap = function () {
-
         var locationMarkers = [];
         // Get all locations and create markers for them;
         $locationService.list().then(function onSuccess(response) {
@@ -689,11 +757,9 @@ app.controller("scenarioCreateNewController", function ($scope, config, $authent
                 response.data.forEach(function (location) {
                     if ($scope.searchLocationTerm == "") {
                         if (location.location_type != "indoor" && location.lat != 0 && location.lng != 0) {
-
                             var markerOptions = {
                                 clickable: true
                             }
-
                             var popupContent = `Location: ${location.name}`;
                             var marker = new L.Marker(L.latLng(location.lat, location.lng), markerOptions).bindPopup(popupContent);
                             marker.on('click', function (e) {
