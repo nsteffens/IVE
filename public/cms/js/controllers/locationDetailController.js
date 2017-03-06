@@ -37,6 +37,15 @@ app.controller("locationDetailController", function ($scope, $routeParams, $wind
         }
     });
 
+    /**
+     * [redirect description]
+     * @param  {[type]} path [description]
+     * @return {[type]}      [description]
+     */
+    $scope.redirect = function (path) {
+        $location.url(path);
+    };
+    
     $locationService.retrieve($routeParams.location_id).then(function onSuccess(location) {
         $scope.location = location.data;
 
@@ -82,10 +91,12 @@ app.controller("locationDetailController", function ($scope, $routeParams, $wind
                     $relationshipService.list_by_type('connected_to').then(function onSuccess(response) {
                         var relations = response.data;
                         relations.forEach(function (relation) {
-                            if (start_location_id == $scope.location.location_id || end_location_id == $scope.location.location_id) {
+                            if (relation.start_location_id == $scope.location.location_id || relation.end_location_id == $scope.location.location_id) {
                                 $relationshipService.remove(relation.relationship_id);
                             }
                         }, this);
+
+                        $scope.redirect('/locations');
                     });
                 })
             }
@@ -128,7 +139,7 @@ app.controller("locationDetailController", function ($scope, $routeParams, $wind
     }
 
     $scope.saveLocation = function () {
-        if (validate) {
+        if (validate()) {
             var location_id = $scope.location.location_id
             var edited_location = {
                 name: $scope.location.name,
@@ -145,14 +156,7 @@ app.controller("locationDetailController", function ($scope, $routeParams, $wind
         }
     }
 
-    /**
-     * [redirect description]
-     * @param  {[type]} path [description]
-     * @return {[type]}      [description]
-     */
-    $scope.redirect = function (path) {
-        $location.url(path);
-    };
+
 
     var getConnections = function (location_id) {
         var ingoing = [];
@@ -223,7 +227,6 @@ app.controller("locationDetailController", function ($scope, $routeParams, $wind
             })
         }
     }
-
     $scope.selectLocation = function (location) {
         $scope.selectedLocation = location;
     }

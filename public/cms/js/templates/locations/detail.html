@@ -81,7 +81,7 @@
     <div class="col-md-6">
 
         <p>{{connectiontype == 'ingoing' ? 'Pick a location!' : 'Startlocation: '+location.name }}</p>
-        <p>Selected Location : <span ng-show="selectedLocation != null">{{selectedLocation.name}}</span></p>
+        <p ng-show="connectiontype == 'ingoing'">Selected Location : <span ng-show="selectedLocation != null">{{selectedLocation.name}}</span></p>
         <button ng-show="connectiontype == 'outgoing'" ng-click="submitConnection()" class="btn btn-primary">Create Connection</button>
 
         <div ng-show="connectiontype == 'ingoing'" class="list-group locationlist">
@@ -92,6 +92,7 @@
 
     <div class="col-md-6">
         <p>Endlocation: {{connectiontype == 'outgoing' ? 'Pick a location!' : location.name }}</p>
+        <p ng-show="connectiontype == 'outgoing'">Selected Location : <span ng-show="selectedLocation != null">{{selectedLocation.name}}</span></p>        
         <button ng-show="connectiontype == 'ingoing'" ng-click="submitConnection()" class="btn btn-primary">Create Connection</button>
 
         <div ng-show="connectiontype == 'outgoing'" class="list-group locationlist">
