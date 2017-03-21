@@ -1,9 +1,15 @@
 var app = angular.module("ive_cms");
 
 
-app.controller("overlayCreateNewController", function ($scope, $window, config, $overlayService, $location, $authenticationService) {
+app.controller("overlayCreateNewController", function ($scope, $rootScope, $window, config, $overlayService, $location, $authenticationService) {
 
     $scope.subsite = "create-new";
+
+    $rootScope.currentCategory = "Overlays";
+    $rootScope.redirectBreadcrumb = function () {
+        $location.url('/overlays');
+    }
+    $rootScope.currentSite = "Create new overlay";
 
     $scope.newOverlay = {
         name: "",

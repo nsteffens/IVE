@@ -1,6 +1,6 @@
 var app = angular.module("ive_cms");
 
-app.controller("locationDetailController", function ($scope, $routeParams, $window, config, $location, $authenticationService, $relationshipService, $locationService, leafletData, $route) {
+app.controller("locationDetailController", function ($scope, $rootScope, $routeParams, $window, config, $location, $authenticationService, $relationshipService, $locationService, leafletData, $route) {
 
     // $scope.active = "scenarios";
     $scope.subsite = "detail";
@@ -14,6 +14,13 @@ app.controller("locationDetailController", function ($scope, $routeParams, $wind
     var desc_input = angular.element('#desc-input');
     var lng_input = angular.element('#lng-input');
     var lat_input = angular.element('#lat-input');
+
+    $rootScope.currentCategory = "Locations";
+    $rootScope.redirectBreadcrumb = function () {
+        $location.url('/locations');
+    }
+    $rootScope.currentSite = null;
+
 
     // Authenticate with the backend to get permissions to delete and modify content
     $authenticationService.authenticate(config.backendLogin)
@@ -48,6 +55,7 @@ app.controller("locationDetailController", function ($scope, $routeParams, $wind
     
     $locationService.retrieve($routeParams.location_id).then(function onSuccess(location) {
         $scope.location = location.data;
+        $rootScope.currentSite = "Location: '"+ $scope.location.name + "'";
 
         leafletData.getMap('locationDetailMap').then(function (map) {
             var popupContent = `Location: ${$scope.location.location_name}`;
@@ -70,7 +78,6 @@ app.controller("locationDetailController", function ($scope, $routeParams, $wind
         })
 
     })
-
 
     $scope.deleteLocation = function () {
         // Delete the location with location.id

@@ -1,6 +1,6 @@
 var app = angular.module("ive_cms");
 
-app.controller("locationOverviewController", function ($scope, $window, config, $location, $authenticationService, $relationshipService, $locationService, leafletData, $route) {
+app.controller("locationOverviewController", function ($scope, $rootScope, $window, config, $location, $authenticationService, $relationshipService, $locationService, leafletData, $route) {
 
     // $scope.active = "scenarios";
     $scope.subsite = "overview";
@@ -15,6 +15,12 @@ app.controller("locationOverviewController", function ($scope, $window, config, 
     var desc_input = angular.element('#desc-input');
     var lng_input = angular.element('#lng-input');
     var lat_input = angular.element('#lat-input');
+
+    $rootScope.currentCategory = "Locations";
+    $rootScope.redirectBreadcrumb = function () {
+        $location.url('/locations');
+    }
+    $rootScope.currentSite = null;
 
 
     // Authenticate with the backend to get permissions to delete and modify content

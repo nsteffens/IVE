@@ -1,6 +1,6 @@
 var app = angular.module("ive_cms");
 
-app.controller("videoCreateNewController", function ($scope, config, $location, $authenticationService, $videoService, $locationService, $relationshipService, $document, $window, Upload, leafletData) {
+app.controller("videoCreateNewController", function ($scope, $rootScope, config, $location, $authenticationService, $videoService, $locationService, $relationshipService, $document, $window, Upload, leafletData) {
 
     $scope.file_selected = false;
 
@@ -11,6 +11,13 @@ app.controller("videoCreateNewController", function ($scope, config, $location, 
         recorded: "",
         location: { name: "", description: "", lng: 0, lat: 0 }
     }
+
+    $rootScope.currentCategory = "Videos";
+    $rootScope.redirectBreadcrumb = function () {
+        $location.url('/videos');
+    }
+    $rootScope.currentSite = "Create new video";
+
 
     // Input fields
     var name_input = angular.element('#name-input');

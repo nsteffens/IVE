@@ -82,10 +82,12 @@
 			</button>
 		<a class="col-md-1 navbar-brand" href="/cms">IVE CMS</a>
 		<nav class="offset-md-1 breadcrumbs">
-			<a class="breadcrumb-item" href="#">Home</a>
-			<a class="breadcrumb-item" href="#">Library</a>
-			<a class="breadcrumb-item" href="#">Data</a>
-			<span class="breadcrumb-item active">Bootstrap</span>
+			<a class="breadcrumb-item" href="/cms">Home</a>
+			<a ng-if="currentCategory != null && currentSite != null" class="breadcrumb-item" href="" ng-click="redirectBreadcrumb()">{{currentCategory}}</a>
+			<span ng-if="currentCategory != null && currentSite == null" class="breadcrumb-item active">{{currentCategory}}</span>
+			<span ng-if="currentSite != null" class="breadcrumb-item active">{{currentSite}}</span>
+			<!--<a class="breadcrumb-item" href="#">Data</a>-->
+			<!--<span class="breadcrumb-item active">Bootstrap</span>-->
 		</nav>
 	</nav>
 

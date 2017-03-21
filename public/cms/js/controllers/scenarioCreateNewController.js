@@ -1,6 +1,6 @@
 var app = angular.module("ive_cms");
 
-app.controller("scenarioCreateNewController", function ($scope, config, $authenticationService, $locationService, $relationshipService, $scenarioService, $videoService, $overlayService, $location, $document, leafletData, Upload, $sce) {
+app.controller("scenarioCreateNewController", function ($scope, config, $authenticationService, $locationService, $relationshipService, $scenarioService, $videoService, $overlayService, $location, $document, leafletData, Upload, $sce, $rootScope) {
 
     $scope.currentState = {
         general: true, // General Information Input Screen
@@ -13,7 +13,14 @@ app.controller("scenarioCreateNewController", function ($scope, config, $authent
 
     $scope.currentState.general = true;
 
-    $scope.subsite = "create-new";
+    $rootScope.currentCategory = "Scenarios";
+    $rootScope.redirectBreadcrumb = function () {
+        console.log('echo');
+        $location.url('/scenarios');
+    }
+    $rootScope.currentSite = "Create new Scenario";
+
+    // $scope.subsite = "create-new";
 
     $scope.newScenario = {
         name: "",

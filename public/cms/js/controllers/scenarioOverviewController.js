@@ -1,10 +1,16 @@
 var app = angular.module("ive_cms");
 
-app.controller("scenarioOverviewController", function ($scope, $window, $scenarioService, $relationshipService, $location, $authenticationService, config) {
+app.controller("scenarioOverviewController", function ($scope, $rootScope, $window, $scenarioService, $relationshipService, $location, $authenticationService, config) {
 
     // $scope.active = "scenarios";
     $scope.subsite = "overview";
     $scope.portraitView = true;
+
+    $rootScope.currentCategory = "Scenarios";
+    $rootScope.redirectBreadcrumb = function () {
+        $location.url('/scenarios');
+    }
+    $rootScope.currentSite = null;
 
     $authenticationService.authenticate(config.backendLogin)
         .then(function onSuccess(response) {

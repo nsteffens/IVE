@@ -1,6 +1,6 @@
 var app = angular.module("ive_cms");
 
-app.controller("scenarioDetailController", function ($scope, $window, $document, config, $authenticationService, $scenarioService, $locationService, $relationshipService, $overlayService, $location, $routeParams, $sce, $filter, leafletData) {
+app.controller("scenarioDetailController", function ($scope, $rootScope, $window, $document, config, $authenticationService, $scenarioService, $locationService, $relationshipService, $overlayService, $location, $routeParams, $sce, $filter, leafletData) {
 
     $scope.subsite = "detail";
     $scope.editMode = false;
@@ -10,6 +10,12 @@ app.controller("scenarioDetailController", function ($scope, $window, $document,
     var desc_input = angular.element('#desc-input');
     var tags_input = angular.element('#tags-input');
     var created_input = angular.element('#created-input');
+
+    $rootScope.currentCategory = "Scenarios";
+    $rootScope.redirectBreadcrumb = function () {
+        $location.url('/scenarios');
+    }
+    $rootScope.currentSite = null;
 
     $authenticationService.authenticate(config.backendLogin)
         .then(function onSuccess(response) {
@@ -28,6 +34,8 @@ app.controller("scenarioDetailController", function ($scope, $window, $document,
         .then(function onSuccess(response) {
             $scope.scenario = response.data;
             $scope.scenario.videos = [];
+
+            $rootScope.currentSite = "Scenario: '" + $scope.scenario.name + "'";
 
             // Style date 
             $scope.scenario.created = $filter('timestamp')($scope.scenario.created);

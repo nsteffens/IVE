@@ -1,12 +1,18 @@
 var app = angular.module("ive_cms");
 
 
-app.controller("overlayDetailController", function ($scope, $routeParams, $window, config, $overlayService, $location, $authenticationService, $relationshipService) {
+app.controller("overlayDetailController", function ($scope, $rootScope, $routeParams, $window, config, $overlayService, $location, $authenticationService, $relationshipService) {
 
     $scope.subsite = "detail";
     $scope.editMode = false;
 
     $scope.appearsInVideos = [];
+
+    $rootScope.currentCategory = "Overlays";
+    $rootScope.redirectBreadcrumb = function () {
+        $location.url('/overlays');
+    }
+    $rootScope.currentSite = null;
 
     // Input fields
     var name_input = angular.element('#name-input');
@@ -25,6 +31,7 @@ app.controller("overlayDetailController", function ($scope, $routeParams, $windo
 
     $overlayService.retrieve($routeParams.overlay_id).then(function onSuccess(response) {
         $scope.overlay = response.data;
+        $rootScope.currentSite = "Overlay: '" + $scope.overlay.name + "'";
         $scope.overlay.tags = [];
 
         $relationshipService.list_by_type('embedded_in').then(function onSuccess(videos) {

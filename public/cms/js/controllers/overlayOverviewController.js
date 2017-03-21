@@ -1,10 +1,16 @@
 var app = angular.module("ive_cms");
 
-app.controller("overlayOverviewController", function ($scope, $window, config, $overlayService, $location, $authenticationService, $relationshipService) {
+app.controller("overlayOverviewController", function ($scope, $rootScope, $window, config, $overlayService, $location, $authenticationService, $relationshipService) {
 
     // $scope.active = "scenarios";
     $scope.subsite = "overview";
     $scope.portraitView = true;
+
+    $rootScope.currentCategory = "Overlays";
+    $rootScope.redirectBreadcrumb = function () {
+        $location.url('/overlays');
+    }
+    $rootScope.currentSite = null;
 
     // Authenticate with the backend to get permissions to delete content
     $authenticationService.authenticate(config.backendLogin)

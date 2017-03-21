@@ -1,10 +1,16 @@
 var app = angular.module("ive_cms");
 
-app.controller("videoOverviewController", function ($scope, $window, config, $videoService, $location, $authenticationService, $relationshipService) {
+app.controller("videoOverviewController", function ($scope, $rootScope, $window, config, $videoService, $location, $authenticationService, $relationshipService) {
 
     // $scope.active = "videos";
     $scope.subsite = "overview";
     $scope.portraitView = true;
+
+    $rootScope.currentCategory = "Videos";
+    $rootScope.redirectBreadcrumb = function () {
+        $location.url('/videos');
+    }
+    $rootScope.currentSite = null;
 
     // Authenticate with the backend to get permissions to delete content
 

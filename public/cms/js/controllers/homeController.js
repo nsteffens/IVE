@@ -1,12 +1,15 @@
 var app = angular.module("ive_cms");
 
-app.controller("homeController", function ($scope, $relationshipService, leafletData, $location, $window) {
+app.controller("homeController", function ($scope, $rootScope, $relationshipService, leafletData, $location, $window) {
 
 
     var scenario_markers = [];
     var video_markers = [];
 
     $scope.active = '';
+
+    $rootScope.currentCategory = null;
+    $rootScope.currentSite = null;
 
     var featureGroup;
 

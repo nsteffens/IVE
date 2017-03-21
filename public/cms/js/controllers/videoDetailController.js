@@ -1,6 +1,6 @@
 var app = angular.module("ive_cms");
 
-app.controller("videoDetailController", function ($scope, $window, config, $authenticationService, $videoService, $locationService, $relationshipService, $location, $routeParams, $sce, $filter, leafletData) {
+app.controller("videoDetailController", function ($scope, $rootScope, $window, config, $authenticationService, $videoService, $locationService, $relationshipService, $location, $routeParams, $sce, $filter, leafletData) {
 
     $scope.subsite = "detail";
     $scope.editMode = false;
@@ -10,6 +10,13 @@ app.controller("videoDetailController", function ($scope, $window, config, $auth
     var desc_input = angular.element('#desc-input');
     var tags_input = angular.element('#tags-input');
     var recorded_input = angular.element('#recorded-input');
+
+
+    $rootScope.currentCategory = "Videos";
+    $rootScope.redirectBreadcrumb = function () {
+        $location.url('/videos');
+    }
+    $rootScope.currentSite = null;
 
     $authenticationService.authenticate(config.backendLogin)
         .then(function onSuccess(response) {
@@ -23,11 +30,11 @@ app.controller("videoDetailController", function ($scope, $window, config, $auth
         .then(function onSuccess(response) {
 
             $scope.video = response.data;
+            $rootScope.currentSite = "Video: '" + $scope.video.name + "'";
 
             // Style date to 
             $scope.video.recorded = $filter('timestamp')($scope.video.recorded);
             $scope.video.tags = ['tag1,tag2,tag3'];
-            // console.log($scope.video);
 
             var videoExtension = $scope.video.url.split('.')[1];
 
@@ -40,9 +47,10 @@ app.controller("videoDetailController", function ($scope, $window, config, $auth
             console.log($scope.video.url);
             // Init video, TODO: Fill with real video and remove placeholder
             $scope.videoConfig = {
-                sources: [
-                    { src: $sce.trustAsResourceUrl($scope.video.url), type: "video/" + videoExtension }
-                ],
+                sources: [{
+                    src: $sce.trustAsResourceUrl($scope.video.url),
+                    type: "video/" + videoExtension
+                }],
                 tracks: [],
                 theme: "../bower_components/videogular-themes-default/videogular.css",
                 // plugins: {
@@ -58,7 +66,9 @@ app.controller("videoDetailController", function ($scope, $window, config, $auth
 
                         leafletData.getMap('videoDetailMap').then(function (map) {
                             var popupContent = `Location: ${relation.location_name}`;
-                            var videoPositionMarker = new L.Marker(L.latLng(relation.location_lat, relation.location_lng), { clickable: true }).bindPopup(popupContent);
+                            var videoPositionMarker = new L.Marker(L.latLng(relation.location_lat, relation.location_lng), {
+                                clickable: true
+                            }).bindPopup(popupContent);
                             videoPositionMarker.addTo(map);
                             map.setView(videoPositionMarker._latlng, 14);
                         });

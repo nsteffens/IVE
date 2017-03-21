@@ -1,9 +1,16 @@
-app.controller("locationCreateNewController", function ($scope, $window, config, $location, $authenticationService, $relationshipService, $locationService, leafletData) {
+app.controller("locationCreateNewController", function ($scope, $rootScope, $window, config, $location, $authenticationService, $relationshipService, $locationService, leafletData) {
 
     var name_input = angular.element('#name-input');
     var desc_input = angular.element('#desc-input');
     var lng_input = angular.element('#lng-input');
     var lat_input = angular.element('#lat-input');
+
+    $rootScope.currentCategory = "Locations";
+    $rootScope.redirectBreadcrumb = function () {
+        $location.url('/locations');
+    }
+    $rootScope.currentSite = "Create new location";
+
 
     angular.extend($scope, {
         defaults: {
