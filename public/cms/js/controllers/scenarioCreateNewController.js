@@ -1,6 +1,6 @@
 var app = angular.module("ive_cms");
 
-app.controller("scenarioCreateNewController", function ($scope, config, $authenticationService, $locationService, $relationshipService, $scenarioService, $videoService, $overlayService, $location, $document, leafletData, Upload, $sce, $rootScope) {
+app.controller("scenarioCreateNewController", function ($scope, config, $authenticationService, $locationService, $relationshipService, $scenarioService, $videoService, $overlayService, $location, $document, leafletData, Upload, $sce, $rootScope, $window) {
 
     $scope.currentState = {
         general: true, // General Information Input Screen
@@ -15,10 +15,9 @@ app.controller("scenarioCreateNewController", function ($scope, config, $authent
 
     $rootScope.currentCategory = "Scenarios";
     $rootScope.redirectBreadcrumb = function () {
-        console.log('echo');
         $location.url('/scenarios');
     }
-    $rootScope.currentSite = "Create new Scenario";
+    $rootScope.currentSite = "Create new scenario";
 
     // $scope.subsite = "create-new";
 
@@ -53,7 +52,7 @@ app.controller("scenarioCreateNewController", function ($scope, config, $authent
     // Method to sumbit the general Scenario information, send it to the
     // server and handle the created object
     $scope.submitGeneral = function () {
-        if ($scope.validateScenario() && !scenarioCreated) {
+        if ($scope.validateScenario() == true && !scenarioCreated) {
 
             // Send Scenario to Service 
             // Include Tags here when implemented
@@ -67,8 +66,7 @@ app.controller("scenarioCreateNewController", function ($scope, config, $authent
                     scenarioCreated = true;
                 })
         } else {
-            $scope.currentState.general = false;
-            $scope.currentState.scenarioVideoOverview = true;
+            return;
         }
     }
 
@@ -121,6 +119,61 @@ app.controller("scenarioCreateNewController", function ($scope, config, $authent
      */
 
     $scope.uploadVideo = function () {
+
+        var startUpload = function () {
+            Upload.upload({
+                    url: '/cms/videos/upload',
+                    data: uploadVideoData
+                })
+                .progress(function (evt) {
+                    var progressPercentage = parseInt(100.0 * evt.loaded / evt.total);
+
+                    $scope.uploadStatus.currentPercentage = progressPercentage;
+                    $scope.uploadStatus.loaded = evt.loaded;
+                    $scope.uploadStatus.total = evt.total;
+
+                    angular.element('.progress-bar').attr('aria-valuenow', progressPercentage).css('width', progressPercentage + '%');
+                })
+                .success(function (data, status, headers, config) {
+                    console.log("Upload finished! Creating Thumbnail now...");
+
+                    $videoService.create({
+                        name: $scope.newVideo.name,
+                        description: $scope.newVideo.description,
+                        url: '/' + data.url.split('/public/')[1],
+                        recorded: $scope.newVideo.recorded
+                    }).then(function (createdVideo) {
+
+                        if (createdVideo.status != 201) {
+                            $window.alert('It seems like the backend is not responding. Please try again later.');
+                            return;
+                        }
+
+                        // Create relationship between location and the new video
+                        var recorded_at = {
+                            video_id: createdVideo.data.video_id,
+                            location_id: newLocation.location_id,
+                            preferred: false // What does this parameter do?
+                        }
+
+                        $relationshipService.create('recorded_at', recorded_at).then(function (createdRelation) {
+                            if (createdVideo.status == 201) {
+                                createdVideo.data.location = newLocation;
+                                $scope.newScenario.videos.push(createdVideo.data);
+                                $scope.currentState.addVideo = false;
+                                $scope.currentState.scenarioVideoOverview = true;
+                            }
+
+                        })
+
+                    })
+
+                })
+                .error(function (data, status, headers, config) {
+                    console.log('error status: ' + status);
+                })
+        }
+
         var newLocation;
         $scope.uploadStarted = true;
         $scope.uploadStatus = {
@@ -139,7 +192,7 @@ app.controller("scenarioCreateNewController", function ($scope, config, $authent
                 newVideo: $scope.newVideo
             };
             newLocation = $scope.newVideo.location;
-
+            startUpload();
         } else {
             $scope.newVideo.location.location_type = "outdoor";
             // Create location
@@ -149,65 +202,16 @@ app.controller("scenarioCreateNewController", function ($scope, config, $authent
                         $window.alert('It seems like the backend is not responding. Please try again later.');
                         return;
                     }
+                    $scope.newVideo.location = response.data;
                     newLocation = response.data;
+                    uploadVideoData.location = {
+                        newLocation: $scope.newVideo.location,
+                        newVideo: $scope.newVideo
+                    }
+                    startUpload();
                 });
-
-            uploadVideoData.location = {
-                newLocation: $scope.newVideo.location,
-                newVideo: $scope.newVideo
-            }
         }
 
-        Upload.upload({
-                url: '/cms/videos/upload',
-                data: uploadVideoData
-            })
-            .progress(function (evt) {
-                var progressPercentage = parseInt(100.0 * evt.loaded / evt.total);
-
-                $scope.uploadStatus.currentPercentage = progressPercentage;
-                $scope.uploadStatus.loaded = evt.loaded;
-                $scope.uploadStatus.total = evt.total;
-
-                angular.element('.progress-bar').attr('aria-valuenow', progressPercentage).css('width', progressPercentage + '%');
-            })
-            .success(function (data, status, headers, config) {
-                console.log("Upload finished! Creating Thumbnail now...");
-
-                $videoService.create({
-                    name: $scope.newVideo.name,
-                    description: $scope.newVideo.description,
-                    url: '/' + data.url.split('/public/')[1],
-                    recorded: $scope.newVideo.recorded
-                }).then(function (createdVideo) {
-
-                    if (createdVideo.status != 201) {
-                        $window.alert('It seems like the backend is not responding. Please try again later.');
-                        return;
-                    }
-
-                    // Create relationship between location and the new video
-                    var recorded_at = {
-                        video_id: createdVideo.data.video_id,
-                        location_id: newLocation.location_id,
-                        preferred: false //What does this parameter do?
-                    }
-
-                    $relationshipService.create('recorded_at', recorded_at).then(function (createdRelation) {
-                        if (createdVideo.status == 201) {
-                            $scope.newScenario.videos.push(createdVideo.data);
-                            $scope.currentState.addVideo = false;
-                            $scope.currentState.scenarioVideoOverview = true;
-                        }
-
-                    })
-
-                })
-
-            })
-            .error(function (data, status, headers, config) {
-                console.log('error status: ' + status);
-            })
 
     }
 
@@ -235,7 +239,6 @@ app.controller("scenarioCreateNewController", function ($scope, config, $authent
             case 'finishScenario':
                 $scope.currentState.finishScenario = false;
                 $scope.currentState.scenarioVideoOverview = true;
-                console.log($scope.currentState);
                 $scope.$apply();
                 return;
         }
@@ -406,7 +409,6 @@ app.controller("scenarioCreateNewController", function ($scope, config, $authent
         }
     }
 
-
     /**
      * 
      * =============
@@ -430,7 +432,38 @@ app.controller("scenarioCreateNewController", function ($scope, config, $authent
 
     $scope.submitOverlayRotation = function () {
 
-        // Handle stuff here, read out from three.js or so..
+        /**
+         *  
+         * =============
+         * To be implemented:
+         * =============
+         * 
+         * Create embedded_in relation for $scope.currentVideo.overlay and $scope.currentVideo here.
+         * This relation needs to contain the rotational parameters, which need to be calculated / extracted
+         * from three.js.
+         * 
+         */
+
+        // Faking it for now..
+
+        console.log('Faking overlay rotation');
+        overlayRotation = {
+            overlay_id: $scope.currentVideo.overlay.overlay_id,
+            video_id: $scope.currentVideo.video_id,
+            w: 0,
+            h: 0,
+            d: 0,
+            x: 0,
+            y: 0,
+            z: 0,
+            rx: 0,
+            ry: 0,
+            rz: 0,
+            display: true
+        };
+
+        $scope.newScenario.videos[$scope.currentVideoIndex].overlay.rotation = overlayRotation;
+
         if ($scope.currentVideoIndex == $scope.newScenario.videos.length - 1) {
             $scope.currentState.placeOverlay = false;
             $scope.currentState.finishScenario = true;
@@ -453,17 +486,6 @@ app.controller("scenarioCreateNewController", function ($scope, config, $authent
 
             $scope.currentState.placeOverlay = false;
             $scope.currentState.createOverlay = true;
-
-
-            /**
-             *  
-             * =============
-             * To be implemented:
-             * =============
-             * 
-             * Create embedded_in relation for $scope.currentVideo.overlay and $scope.currentVideo here.
-             * 
-             */
         }
     }
 
@@ -475,52 +497,58 @@ app.controller("scenarioCreateNewController", function ($scope, config, $authent
      * 
      */
     $scope.finishScenario = function () {
-
-        console.log($scope.newScenario);
-
         $scope.submitScenario();
-
-        console.log('Finished!');
-        $scope.redirect('/scenarios');
     }
 
     $scope.submitScenario = function () {
-
-        // Set the first Video's location as the startLocation of our scenario
-        $relationshipService.list_by_type('recorded_at').then(function onSuccess(response) {
-            var relations = response.data;
-            var firstVideo = $scope.newScenario.videos[0];
-            relations.forEach(function (relation) {
-                if (relation.video_id == firstVideo.video_id) {
-                    $relationshipService.create('belongs_to',   {
-                        scenario_id: $scope.newScenario.scenario_id,
-                        location_id: relation.location_id
-                    }, 'location')
-                }
-            }, this);
-        })
-
         // Add Video belongs_to relation -- for it's overlay, too if neccessary
+        var scenario_id = $scope.newScenario.scenario_id;
 
-        // NOT WORKING CORRECTLY: There might be an error at the backend handling two quickly incoming requests
-        // Relations are created but it's just a duplicate of the first one..
-        $scope.newScenario.videos.forEach(function (video, index) {
-            console.log('CREATING RELATION FOR:')
-            console.log(video)
+        var createRelation = function (video, callback) {
+
             $relationshipService.create('belongs_to', {
-                scenario_id: $scope.newScenario.scenario_id,
-                video_id: $scope.newScenario.videos[index].video_id
+                scenario_id: scenario_id,
+                video_id: video.video_id
             }, 'video').then(function onSuccess() {
 
-                // Create overlay relations
-                if (video.overlay) {
-                    $relationshipService.create('belongs_to', {
-                        scenario_id: $scope.newScenario.scenario_id,
-                        overlay_id: $scope.newScenario.videos[index].overlay.overlay_id
-                    }, 'overlay')
-                }
+                $relationshipService.create('belongs_to', {
+                    scenario_id: scenario_id,
+                    location_id: video.location.location_id
+                }, 'location').then(function onSuccess() {
+
+                    if (video.overlay) {
+                        $relationshipService.create('belongs_to', {
+                            scenario_id: scenario_id,
+                            overlay_id: video.overlay.overlay_id
+                        }, 'overlay').then(function onSuccess() {
+                            $relationshipService.create('embedded_in', video.overlay.rotation)
+                                .then(function onSuccess() {
+                                    callback();
+                                })
+                        })
+                    } else {
+                        // When there is no overlay for this video
+                        callback();
+                    }
+                })
             })
-        }, this);
+        }
+
+        var counter = 0;
+        var execute = function () {
+            var length = $scope.newScenario.videos.length;
+            if (counter < length) {
+                createRelation($scope.newScenario.videos[counter], function () {
+                    if (counter != length - 1) {
+                        counter++
+                        execute();
+                    } else {
+                        $scope.redirect('/scenarios/' + scenario_id);
+                    }
+                })
+            }
+        }
+        execute();
     }
 
     /**
@@ -582,7 +610,6 @@ app.controller("scenarioCreateNewController", function ($scope, config, $authent
             desc_input.addClass('form-control-danger');
             isValid = false;
         }
-        console.log($scope.newScenario);
         // Put tags in array
         if ($scope.newScenario.tags != "" && $scope.newScenario.tags != null) {
             // Parse array, grab them by the comma and remove the #
@@ -816,8 +843,6 @@ app.controller("scenarioCreateNewController", function ($scope, config, $authent
 
 
             }
-
-
         });
     }
 
@@ -854,6 +879,11 @@ app.controller("scenarioCreateNewController", function ($scope, config, $authent
 
                                 marker.on('click', function (e) {
                                     $scope.newVideo = video;
+                                    $scope.newVideo.location = {
+                                        lat: relation.location_lat,
+                                        lng: relation.location_lng,
+                                        location_id: relation.location_id
+                                    }
                                     $scope.existingVideo = true;
                                 })
                                 videoMarkers.push(marker);

@@ -48,15 +48,13 @@ app.controller("scenarioDetailController", function ($scope, $rootScope, $window
                     if (relation.scenario_id == $scope.scenario.scenario_id) {
                         $scope.scenario.videos.push(relation);
                     }
-
                 }, this);
 
                 // Get the Location for each video and attach it
-                $relationshipService.list_by_type('recorded_at').then(function onSuccess(response) {
-                    var video_locations = response.data;
+                $relationshipService.list_by_type('recorded_at').then(function onSuccess(response_rec) {
+                    var video_locations = response_rec.data;
 
                     var videoMarkers = [];
-
                     video_locations.forEach(function (relation) {
                         $scope.scenario.videos.forEach(function (video, index) {
                             if (relation.video_id == video.video_id) {
@@ -104,20 +102,6 @@ app.controller("scenarioDetailController", function ($scope, $rootScope, $window
                     })
                 })
             })
-            /**
-             * 
-             *  Find Relations between the locations to see triggerable 'options'
-             *  Since I can't contact the service yet to indentify them per scenario
-             *  this will be added later
-             * 
-             */
-
-            // $relationshipService.list_by_type('connected_to').then(function onSuccess(response) {
-            //     // console.log(response.data);
-            //     // console.log($scope.scenario)
-
-            // })
-
         });
 
     angular.extend($scope, {
@@ -159,12 +143,7 @@ app.controller("scenarioDetailController", function ($scope, $rootScope, $window
 
     // Function that is triggered when the in editMode accessible button "delete" is clicked
     $scope.saveScenario = function () {
-        console.log($scope.scenario);
-
         // Validate input
-
-        // Save using $videoService
-
         var isValid = true;
 
         if ($scope.scenario.name == "") {
@@ -201,7 +180,6 @@ app.controller("scenarioDetailController", function ($scope, $rootScope, $window
                 created_input.parent().parent().addClass('has-danger')
                 created_input.addClass('form-control-danger');
                 isValid = false;
-                console.log(isNaN(created_date));
             }
 
             // Catch dates in the future...
@@ -218,7 +196,6 @@ app.controller("scenarioDetailController", function ($scope, $rootScope, $window
         }
 
         if (isValid) {
-            console.log('saving video?')
             $scenarioService.edit($scope.scenario.scenario_id, $scope.scenario).then(function (response) {
                 if (response.status == 200) {
                     $scope.redirect('/scenarios');
@@ -228,8 +205,6 @@ app.controller("scenarioDetailController", function ($scope, $rootScope, $window
     }
 
     $scope.deleteVideo = function (video_id) {
-        console.log(video_id);
-
         if ($window.confirm(`You are going to remove this Video from the Scenario. Are you sure? THIS WILL NOT BE REVERSIBLE!`)) {
             if ($window.confirm('Are you really, really sure?')) {
                 var video_to_delete;
@@ -245,9 +220,9 @@ app.controller("scenarioDetailController", function ($scope, $rootScope, $window
 
                 // Remove belongs_to relation
                 // Disabled -- too dangerous for now ;-)
-                // $relationshipService.remove(video_to_delete.relationship_id).then(function(response){
+                $relationshipService.remove(video_to_delete.relationship_id).then(function onSuccess(response){
 
-                // })
+                })
             }
         }
 
@@ -263,11 +238,8 @@ app.controller("scenarioDetailController", function ($scope, $rootScope, $window
                             if (overlay.overlay_id == overlay_id) {
                                 $scope.scenario.videos[index].overlays.splice(overlayIndex, 1);
 
-                                // Remove embedded_in relation
-                                // Disabled -- too dangerous for now ;-)
-                                // $relationshipService.remove(overlay.relationship_id).then(function onSuccess(response) {
-                                //     console.log(response);
-                                // })
+                                $relationshipService.remove(overlay.relationship_id).then(function onSuccess(response) {
+                                })
                             }
                         })
                     }
@@ -280,8 +252,6 @@ app.controller("scenarioDetailController", function ($scope, $rootScope, $window
 
     $scope.repositionOverlay = function (overlay) {
         $scope.repositionOverlayState = true;
-        console.log(overlay);
-
         $scope.positioningOverlay = overlay;
 
         var videoExtension = $scope.positioningOverlay.video_url.split('.')[1];

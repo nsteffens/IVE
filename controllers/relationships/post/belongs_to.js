@@ -23,7 +23,6 @@ exports.request = function(req, res) {
 
     // Start session
     var session = driver.session();
-
     var query_1;
     var query_2;
     var query_3;
