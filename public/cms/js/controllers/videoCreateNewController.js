@@ -173,7 +173,6 @@ app.controller("videoCreateNewController", function ($scope, $rootScope, config,
                 })
 
                 SearchMarkers.push(marker)
-                // console.log(location);
             }
         }, this);
 
@@ -327,7 +326,6 @@ app.controller("videoCreateNewController", function ($scope, $rootScope, config,
             uploadVideoData.location = { existing_name: location_name, newVideo: $scope.newVideo }
         }
 
-        console.log(uploadVideoData);
         Upload.upload({
             url: '/cms/videos/upload',
             data: uploadVideoData
@@ -343,7 +341,6 @@ app.controller("videoCreateNewController", function ($scope, $rootScope, config,
             })
             .success(function (data, status, headers, config) {
                 console.log("Upload finished! Creating Thumbnail now...");
-                // console.log(data);
 
                 $videoService.create({
                     name: $scope.newVideo.name,
@@ -366,7 +363,6 @@ app.controller("videoCreateNewController", function ($scope, $rootScope, config,
 
                     $relationshipService.create('recorded_at', recorded_at).then(function (createdRelation) {
                         if (createdVideo.status == 201) {
-                            // console.log('/videos/' + createdVideo);
                             $scope.redirect('/videos/' + createdVideo.data.video_id);
                         }
 
@@ -376,7 +372,6 @@ app.controller("videoCreateNewController", function ($scope, $rootScope, config,
 
 
 
-                //console.log('file ' + config._file.name + 'uploaded. Response: ' + data);
             })
             .error(function (data, status, headers, config) {
                 console.log('error status: ' + status);

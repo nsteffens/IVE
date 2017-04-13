@@ -93,3 +93,7 @@ hr {
     background-color: green;
     opacity: 0.7;
 }
+
+.col-center {
+    margin: 0 auto;
+}

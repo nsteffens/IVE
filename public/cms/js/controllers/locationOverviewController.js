@@ -53,7 +53,6 @@ app.controller("locationOverviewController", function ($scope, $rootScope, $wind
 
         $relationshipService.list_by_type('connected_to').then(function onSuccess(relations) {
             $scope.connections = relations.data;
-            console.log(relations);
         })
 
 
@@ -69,14 +68,6 @@ app.controller("locationOverviewController", function ($scope, $rootScope, $wind
                 }).bindPopup(popupContent);
 
                 marker.on('click', function (e) {
-                    // $scope.clickedMarker = marker;
-                    // $scope.clickedMarker.name = location.name;
-                    // $scope.clickedMarker.description = location.description;
-                    // $scope.clickedMarker.id = location.location_id;
-                    // $scope.clickedMarker.location_type = 'outdoor';
-                    // $scope.clickedMarker.connections = getConnections(location.location_id);
-                    // console.log($scope.clickedMarker);
-
                     $scope.redirect(`/locations/${location.location_id}`);
                 })
 
@@ -210,10 +201,8 @@ app.controller("locationOverviewController", function ($scope, $rootScope, $wind
                         }
                     }
                     $scope.locations = searchResults;
-                    console.log($scope.locations);
                     // Init redrawing of the map --> clear featuregroup, create new markers ...
                 } else {
-                    console.log(allLocations);
                     $scope.locations = allLocations;
                 }
 
@@ -269,10 +258,9 @@ app.controller("locationOverviewController", function ($scope, $rootScope, $wind
 
         if ($window.confirm(`You are going to delete the Location ${$scope.clickedMarker.name}. Are you sure? THIS WILL NOT BE REVERSIBLE!`)) {
             if ($window.confirm('Are you really, really sure?')) {
-                // $relationshipService.remove(connection_id).then(function onSuccess(response) {
-                //     console.log(response);
-                // })
-                console.log(connection_id);
+                 $relationshipService.remove(connection_id).then(function onSuccess(response) {
+                     console.log(response);
+                 })
                 console.log('Connection deleted;')
             }
         }

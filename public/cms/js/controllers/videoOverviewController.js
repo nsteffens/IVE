@@ -30,10 +30,6 @@ app.controller("videoOverviewController", function ($scope, $rootScope, $window,
             $scope.videos.forEach(function (element) {
                 element.tags = ['tag1', 'tag2', 'tag3', 'tag4', 'tag5']
             }, this);
-            // console.log(response);
-
-            // TODO: Include Moment here and format the dates...
-            // console.log($moment().format($scope.videos[0].created));
         })
 
     /**

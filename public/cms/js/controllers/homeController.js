@@ -31,7 +31,26 @@ app.controller("homeController", function ($scope, $rootScope, $relationshipServ
 
                     scenarioID = element.s_id;
 
-                    var markerObject = L.marker(L.latLng(element.location_lat, element.location_lng), { title: element.scenario_name })
+                    var myIcon = new L.Icon({
+                        iconUrl: 'images/scenariomarker.png',
+                        iconRetinaUrl: 'images/scenariomarker@2x.png',
+                        iconSize: [25, 41],
+                        iconAnchor: [12, 41]
+                    })
+
+
+                    var markerObject = L.marker(L.latLng(element.location_lat, element.location_lng), {
+                        title: element.scenario_name,
+                        clickable: true,
+                        icon: myIcon
+                    })
+
+                    markerObject.on('click', function(){
+                        $scope.redirect('/scenarios/'+element.scenario_id);
+                    })
+
+
+
 
                     if (element.location_type == "abstract") {
                         markerObject.options.title = element.location_name + " ABSTRACT";
@@ -46,7 +65,10 @@ app.controller("homeController", function ($scope, $rootScope, $relationshipServ
             leafletData.getMap('map').then(function (map) {
 
                 featureGroup = L.featureGroup(scenario_markers).addTo(map);
-                map.fitBounds(featureGroup.getBounds(), { animate: false, padding: L.point(50, 50) })
+                map.fitBounds(featureGroup.getBounds(), {
+                    animate: false,
+                    padding: L.point(50, 50)
+                })
 
             })
 
@@ -69,17 +91,12 @@ app.controller("homeController", function ($scope, $rootScope, $relationshipServ
     });
 
     /**
- * [redirect description]
- * @param  {[type]} path [description]
- * @return {[type]}      [description]
- */
+     * [redirect description]
+     * @param  {[type]} path [description]
+     * @return {[type]}      [description]
+     */
     $scope.redirect = function (path) {
-        console.log(path);
-
         $location.url(path);
     };
 
 });
-
-
-

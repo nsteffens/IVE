@@ -8,8 +8,6 @@ app.controller("navController", function ($scope, $rootScope, $location, $window
      * @return {[type]}      [description]
      */
     $scope.redirect = function (path) {
-
-        console.log(path);
         $location.url(path);
     };
 

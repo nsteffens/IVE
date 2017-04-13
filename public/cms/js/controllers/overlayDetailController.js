@@ -108,8 +108,6 @@ app.controller("overlayDetailController", function ($scope, $rootScope, $routePa
                 '(\\?[;&a-z\\d%_.~+=-]*)?' + // query string
                 '(\\#[-a-z\\d_]*)?$', 'i'); // fragment locator
 
-            console.log(urlRegExp.test($scope.overlay.url));
-
             if (!urlRegExp.test($scope.overlay.url)) {
                 url_input.parent().parent().addClass('has-danger')
                 url_input.addClass('form-control-danger');

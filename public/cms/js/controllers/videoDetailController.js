@@ -43,19 +43,14 @@ app.controller("videoDetailController", function ($scope, $rootScope, $window, c
                 videoExtension = 'mp4';
                 $scope.video.url += '.mp4';
             }
-            // console.log(videoExtension);
-            console.log($scope.video.url);
-            // Init video, TODO: Fill with real video and remove placeholder
+            // Init video
             $scope.videoConfig = {
                 sources: [{
                     src: $sce.trustAsResourceUrl($scope.video.url),
                     type: "video/" + videoExtension
                 }],
                 tracks: [],
-                theme: "../bower_components/videogular-themes-default/videogular.css",
-                // plugins: {
-                //     poster: "/" + $scope.video.url + '_thumbnail.png'
-                // }
+                theme: "../bower_components/videogular-themes-default/videogular.css"
             }
 
 
@@ -120,7 +115,6 @@ app.controller("videoDetailController", function ($scope, $rootScope, $window, c
 
     // Function that is triggered when the in editMode accessible button "delete" is clicked
     $scope.saveVideo = function () {
-        console.log($scope.video);
 
         // Validate input
 
@@ -158,8 +152,6 @@ app.controller("videoDetailController", function ($scope, $rootScope, $window, c
 
             // Trying to create a new date
             var recorded_date = new Date(parseInt($scope.video.recorded.split('-')[0]), parseInt($scope.video.recorded.split('-')[1]), parseInt($scope.video.recorded.split('-')[2]));
-            console.log($scope.video.recorded.split('-'));
-            console.log(recorded_date);
             // Check if it has been parsed correctly
             if (isNaN(recorded_date)) {
                 recorded_input.parent().parent().addClass('has-danger')
@@ -181,10 +173,7 @@ app.controller("videoDetailController", function ($scope, $rootScope, $window, c
         }
 
         if (isValid) {
-            console.log('saving video?')
             $videoService.edit($scope.video.video_id, $scope.video).then(function (response) {
-                console.log(response);
-
                 if (response.status == 200) {
                     $scope.redirect('/videos');
                 }

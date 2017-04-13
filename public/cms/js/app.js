@@ -46,9 +46,6 @@ app.config(function ($logProvider, config) {
 /**
  * Start application
  */
-app.run(function (/*$translate,*/ config) {
-
-    // Use Translator and set Language
-    //$translate.use(config.appLanguage);
+app.run(function (config) {
 
 });

@@ -1,6 +1,6 @@
 var app = angular.module("ive_cms");
 
-app.controller("scenarioDetailController", function ($scope, $rootScope, $window, $document, config, $authenticationService, $scenarioService, $locationService, $relationshipService, $overlayService, $location, $routeParams, $sce, $filter, leafletData) {
+app.controller("scenarioDetailController", function ($scope, $rootScope, $route, $window, $document, config, $authenticationService, $scenarioService, $locationService, $relationshipService, $overlayService, $location, $routeParams, $sce, $filter, leafletData) {
 
     $scope.subsite = "detail";
     $scope.editMode = false;
@@ -84,7 +84,6 @@ app.controller("scenarioDetailController", function ($scope, $rootScope, $window
 
 
                     // Get the Overlays for each video and attach them
-
                     $relationshipService.list_by_type('embedded_in').then(function onSuccess(response) {
                         var overlay_relations = response.data;
                         overlay_relations.forEach(function (relation) {
@@ -219,8 +218,7 @@ app.controller("scenarioDetailController", function ($scope, $rootScope, $window
                 })
 
                 // Remove belongs_to relation
-                // Disabled -- too dangerous for now ;-)
-                $relationshipService.remove(video_to_delete.relationship_id).then(function onSuccess(response){
+                $relationshipService.remove(video_to_delete.relationship_id).then(function onSuccess(response) {
 
                 })
             }
@@ -238,8 +236,7 @@ app.controller("scenarioDetailController", function ($scope, $rootScope, $window
                             if (overlay.overlay_id == overlay_id) {
                                 $scope.scenario.videos[index].overlays.splice(overlayIndex, 1);
 
-                                $relationshipService.remove(overlay.relationship_id).then(function onSuccess(response) {
-                                })
+                                $relationshipService.remove(overlay.relationship_id).then(function onSuccess(response) {})
                             }
                         })
                     }
@@ -272,16 +269,110 @@ app.controller("scenarioDetailController", function ($scope, $rootScope, $window
         }
     }
 
+    $scope.cancelReposition = function () {
+        $scope.repositionOverlayState = false;
+        $route.reload();
+    }
+
     $scope.saveOverlayPosition = function () {
         // This will be implemented when the positioning is done correctly..
 
         console.log('Overlay Saving Simulation...');
-        $scope.redirect('/scenarios/' + $scope.scenario.scenario_id);
-        $scope.repositionOverlayState = false;
+        // This is just faked data with zeroes filled
+        $relationshipService.create('embedded_in', {
+            overlay_id: $scope.positioningOverlay.overlay_id,
+            video_id: $scope.positioningOverlay.video_id,
+            w: 0,
+            h: 0,
+            d: 0,
+            x: 0,
+            y: 0,
+            z: 0,
+            rx: 0,
+            ry: 0,
+            rz: 0,
+            display: true
+        }).then(function onSuccess(response) {
+            $scope.redirect('/scenarios/' + $scope.scenario.scenario_id);
+            $route.reload();
+            $scope.repositionOverlayState = false;
+        })
+    }
+
+    $scope.addOverlay = function (video) {
+        $scope.addOverlayState = true;
+        $scope.baseVideo = video;
+    }
+
+
+    $scope.initOverlayAddition = function (isNew) {
+        if (isNew) {
+            // New overlay will be created
+            $scope.newOverlayState = true;
+            $scope.existingOverlayState = false;
+            $scope.newOverlay = {
+                name: "",
+                description: "",
+                url: "",
+                category: "",
+                tags: []
+            }
+        } else {
+            // Load Picker for exisiting overlay
+            $scope.existingOverlayState = true;
+            $scope.newOverlayState = false;
+            $overlayService.list().then(function onSuccess(response) {
+                $scope.existingOverlays = response.data;
+            })
+
+        }
+
+    }
+
+    $scope.cancelOverlayAddition = function () {
+        $scope.newOverlayState = false;
+        $scope.existingOverlayState = false;
+        $scope.newOverlay = {};
+        $scope.existingOverlays = {};
+        $route.reload();
+    }
+
+    $scope.submitNewOverlay = function (overlay) {
+        $overlayService.create(overlay).then(function onSuccess(response) {
+            overlay = response.data;
+            $relationshipService.create('belongs_to', {
+                scenario_id: $scope.scenario.scenario_id,
+                overlay_id: response.data.overlay_id
+            }, 'overlay').then(function onSuccess(response) {
+                $scope.newOverlayState = false;
+                $scope.addOverlayState = false;
+
+                overlay.video_url = $scope.baseVideo.video_url;
+                overlay.video_id = $scope.baseVideo.video_id;
+                $scope.baseVideo = {};
+                $scope.repositionOverlay(overlay);
+            })
+
+        })
+
+    }
+
+    $scope.submitExistingOverlay = function (overlay) {
+        $relationshipService.create('belongs_to', {
+            scenario_id: $scope.scenario.scenario_id,
+            overlay_id: overlay.overlay_id
+        }, 'overlay').then(function onSuccess(response) {
+            $scope.existingOverlayState = false;
+            $scope.addOverlayState = false;
+
+            overlay.video_url = $scope.baseVideo.video_url;
+            overlay.video_id = $scope.baseVideo.video_id;
+            $scope.baseVideo = {};
+            $scope.repositionOverlay(overlay);
+        })
     }
 
 });
-
 // Directive to handle the overlay positioning mockup
 app.directive('ngDraggable', function ($document) {
     return {

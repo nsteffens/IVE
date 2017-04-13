@@ -27,8 +27,6 @@ app.controller("scenarioOverviewController", function ($scope, $rootScope, $wind
             $scope.scenarios.forEach(function (element) {
                 element.tags = ['tag1', 'tag2', 'tag3', 'tag4', 'tag5']
             }, this);
-
-            // console.log($scope.scenarios);
         })
 
     /**
@@ -41,7 +39,6 @@ app.controller("scenarioOverviewController", function ($scope, $rootScope, $wind
     };
 
     $scope.deleteScenario = function (scenario_id) {
-        console.log(scenario_id);
         if ($window.confirm(`You are going to delete the Scenario. Are you sure? THIS WILL NOT BE REVERSIBLE!`)) {
             if ($window.confirm('Are you really, really sure?')) {
 
@@ -79,7 +76,6 @@ app.controller("scenarioOverviewController", function ($scope, $rootScope, $wind
 
                 // Then remove the scenario
                 $scenarioService.remove(scenario_id).then(function (response) {
-                    console.log(response);
                     // .. and remove it from the list that is displayed in the view
                     $scope.scenarios.forEach(function (scenario, index) {
                         if (scenario.scenario_id == scenario_id) {

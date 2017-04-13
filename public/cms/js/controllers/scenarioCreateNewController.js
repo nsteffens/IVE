@@ -861,7 +861,6 @@ app.controller("scenarioCreateNewController", function ($scope, config, $authent
                         if (video.video_id == relation.video_id) {
 
                             // We dont want to display indoor locations
-
                             if (relation.location_type != "indoor" && relation.location_lat != 0 && relation.location_lng != 0) {
 
                                 var myIcon = new L.Icon({
