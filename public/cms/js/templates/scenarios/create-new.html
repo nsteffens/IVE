@@ -215,7 +215,7 @@
             <button type="button" ng-click="switchOverlayType()" ng-class="{'active': existingOverlay === false}" class="btn btn-secondary">New</button>
         </div>
 
-        <button type="button" class="btn btn-secondary float-right" ng-click="skipVideo()">I don't want an overlay for this Video</button>
+        <button type="button" class="btn btn-warning float-right" ng-click="skipVideo()">I don't want an overlay for this Video</button>
 
         <br>
     </div>
@@ -337,23 +337,36 @@
     </div>
 </div>
 
-<div class="row" ng-show="currentState.finishScenario">
-
-    <div class="col-md-6">
-        <h3> Scenario Overview: </h3>
-        <p>Name: {{newScenario.name}}</p>
-        <p>Description: {{newScenario.description}}</p>
+<div ng-show="currentState.finishScenario">
+    <div class="row">
+        <div class="col-md-12 col-center">
+            <h3>
+                Scenario Overview
+            </h3>
+            <p>Name: {{newScenario.name}}</p>
+            <p>Description: {{newScenario.description}}</p>
+            <hr>
+        </div>
     </div>
 
-    <div class="col-md-6">
-
-        <h3> Video / Overlay Overview: </h3>
-        <ul>
-            <li ng-repeat="video in newScenario.videos">Video #{{$index}}: {{video.name}} <br>{{video.overlay != null ? 'with Overlay '+video.overlay.name : ''}}</li>
-        </ul>
+    <div class="row" ng-repeat="video in newScenario.videos">
+        <div class="col-md-4 video">
+            <p>Video #{{$index + 1}}: {{video.name}}</p>
+            <br>
+            <img width="250px" height="141px" src="{{video.thumbnail_url}}"></br>
+        </div>
+        <div class="col-md-8">
+            <div class="row">
+                <div ng-if="video.overlay != null" class="col-md-4 overlay">
+                    <p>Overlay #{{$index + 1}}: <br> {{video.overlay.name}}</p>
+                    <img width="250px" height="141px" src="{{overlay.url}}" ng-show="video.overlay.category == 'picture'">
+                    <img width="250px" height="141px" src="/media/images/website_placeholder.png" ng-show="video.overlay.category == 'website'">
+                    <img width="250px" height="141px" src="/media/images/other_placeholder.png" ng-show="video.overlay.category == 'other'">
+                </div>
+            </div>
+        </div>
     </div>
 </div>
-
 <div class="row" ng-show="currentState.finishScenario">
     <div class="col-md-12">
         <button type="button" class="btn btn-secondary float-left" ng-click="cancel(finishScenario)"><i class="fa fa-repeat" aria-hidden="true"></i> Restart</i></button>

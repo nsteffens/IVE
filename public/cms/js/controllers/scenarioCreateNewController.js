@@ -263,6 +263,7 @@ app.controller("scenarioCreateNewController", function ($scope, config, $authent
         // Wenn keine extension in der URL war..
         if (videoExtension == null) {
             videoExtension = 'mp4';
+            $scope.currentVideo.thumbnail_url = $scope.currentVideo.url + '_thumbnail.png';
             $scope.currentVideo.url += '.mp4';
         }
 
@@ -330,6 +331,7 @@ app.controller("scenarioCreateNewController", function ($scope, config, $authent
             // Wenn keine extension in der URL war..
             if (videoExtension == null) {
                 videoExtension = 'mp4';
+                $scope.currentVideo.thumbnail_url = $scope.currentVideo.url + '_thumbnail.png';
                 $scope.currentVideo.url += '.mp4';
             }
             // Change Video Preview
@@ -476,6 +478,7 @@ app.controller("scenarioCreateNewController", function ($scope, config, $authent
             // Wenn keine extension in der URL war..
             if (videoExtension == null) {
                 videoExtension = 'mp4';
+                $scope.currentVideo.thumbnail_url = $scope.currentVideo.url + '_thumbnail.png';
                 $scope.currentVideo.url += '.mp4';
             }
             // Adjust implemented video url
@@ -489,13 +492,6 @@ app.controller("scenarioCreateNewController", function ($scope, config, $authent
         }
     }
 
-    /**
-     * 
-     * =============
-     * To be implemented
-     * =============
-     * 
-     */
     $scope.finishScenario = function () {
         $scope.submitScenario();
     }

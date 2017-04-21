@@ -1,6 +1,6 @@
 var app = angular.module("ive_cms");
 
-app.controller("scenarioDetailController", function ($scope, $rootScope, $route, $window, $document, config, $authenticationService, $scenarioService, $locationService, $relationshipService, $overlayService, $location, $routeParams, $sce, $filter, leafletData) {
+app.controller("scenarioDetailController", function ($scope, $rootScope, $route, $window, $document, config, $authenticationService, $videoService, $scenarioService, $locationService, $relationshipService, $overlayService, $location, $routeParams, $sce, $filter, leafletData) {
 
     $scope.subsite = "detail";
     $scope.editMode = false;
@@ -82,22 +82,44 @@ app.controller("scenarioDetailController", function ($scope, $rootScope, $route,
                         })
                     });
 
+                    var filterOverlays = function (overlays) {
+                        $relationshipService.list_by_type('belongs_to', 'overlay').then(function onSuccess(response) {
+                            var filtered = [];
+                            overlays.forEach(function (overlay) {
+                                response.data.forEach(function (relation) {
+                                    if (overlay.overlay_id == relation.overlay_id && relation.scenario_id == $scope.scenario.scenario_id) {
+                                        filtered.push(overlay);
+                                    }
+                                }, this);
+                            }, this);
+                            // Now display the filtered overlays
+                            displayOverlays(filtered);
+                        })
+                    }
+
+                    var displayOverlays = function (overlay_relations) {
+
+                        $scope.scenario.videos.forEach(function (video, video_index) {
+                            $scope.scenario.videos[video_index].overlays = [];
+                            var i = 0;
+                            overlay_relations.forEach(function (overlay, overlay_index) {
+                                if (overlay.video_id == video.video_id) {
+                                    $scope.scenario.videos[video_index].overlays[i] = overlay;
+                                    i++;
+                                }
+
+                                if (i > 1) {
+                                    $scope.scenario.videos[video_index].multipleOverlays = true
+                                }
+
+                            }, this);
+                        })
+                    }
 
                     // Get the Overlays for each video and attach them
                     $relationshipService.list_by_type('embedded_in').then(function onSuccess(response) {
                         var overlay_relations = response.data;
-                        overlay_relations.forEach(function (relation) {
-                            var i = 0;
-                            $scope.scenario.videos.forEach(function (video, index) {
-                                if (relation.video_id == video.video_id) {
-                                    $scope.scenario.videos[index].overlays[i] = relation;
-                                    i++;
-                                }
-                                if (i > 1) {
-                                    $scope.scenario.videos[index].multipleOverlays = true
-                                }
-                            })
-                        });
+                        overlay_relations = filterOverlays(overlay_relations);
                     })
                 })
             })
@@ -236,7 +258,15 @@ app.controller("scenarioDetailController", function ($scope, $rootScope, $route,
                             if (overlay.overlay_id == overlay_id) {
                                 $scope.scenario.videos[index].overlays.splice(overlayIndex, 1);
 
-                                $relationshipService.remove(overlay.relationship_id).then(function onSuccess(response) {})
+                                $relationshipService.remove(overlay.relationship_id).then(function onSuccess() {
+                                    $relationshipService.list_by_type('belongs_to', 'overlay').then(function onSuccess(response) {
+                                        response.data.forEach(function (relation) {
+                                            if (relation.overlay_id == overlay_id) {
+                                                $relationshipService.remove(relation.relationship_id);
+                                            }
+                                        }, this);
+                                    })
+                                })
                             }
                         })
                     }
@@ -299,11 +329,15 @@ app.controller("scenarioDetailController", function ($scope, $rootScope, $route,
         })
     }
 
+    /**
+     * 
+     *  Add overlay to existing scenario
+     * 
+     */
     $scope.addOverlay = function (video) {
         $scope.addOverlayState = true;
         $scope.baseVideo = video;
     }
-
 
     $scope.initOverlayAddition = function (isNew) {
         if (isNew) {
@@ -372,7 +406,213 @@ app.controller("scenarioDetailController", function ($scope, $rootScope, $route,
         })
     }
 
+    /**
+     * 
+     *  Add video to existing scenario
+     * 
+     */
+    $scope.addVideo = function () {
+        $scope.editMode = false;
+        $scope.addVideoState = true;
+    }
+
+    $scope.initVideoAddition = function (isNew) {
+        if (isNew) {
+            if ($window.confirm(`To add a new Video please create it seperately first. Do you want to be redirected to the 'Add a new Video'-Screen?`)) {
+                $scope.redirect('/videos/create-new');
+            } else {
+                $route.reload()
+            }
+        } else {
+            $scope.setupAddExistingVideoMap();
+            $scope.existingVideoState = true;
+            $scope.newVideoState = false;
+        }
+
+    }
+
+    $scope.cancelVideoAddition = function () {
+
+        $scope.newVideoState = false;
+        $scope.existingVideoState = false;
+        $route.reload();
+    }
+
+
+    $scope.submitVideo = function () {
+        // Create relation
+
+        console.log($scope.newVideo);
+        $relationshipService.create('belongs_to', {
+            scenario_id: $scope.scenario.scenario_id,
+            video_id: $scope.newVideo.video_id
+        }, 'video').then(function onSuccess(response) {
+            console.log(response);
+            $route.reload();
+        })
+
+    }
+    /**
+     * 
+     *  Map Settings & setUp functions
+     *  Search functions also included!
+     * 
+     */
+
+    $scope.setupAddExistingVideoMap = function () {
+
+        var videoMarkers = [];
+
+        $videoService.list().then(function (videos) {
+            // Get recorded_At relations
+            $relationshipService.list_by_type('recorded_at').then(function (relations) {
+
+                // create markers from recorded at relation when video.video_id relation.video_id matches
+                videos.data.forEach(function (video, video_index) {
+
+                    relations.data.forEach(function (relation) {
+                        if (video.video_id == relation.video_id) {
+
+                            // We dont want to display indoor locations
+                            if (relation.location_type != "indoor" && relation.location_lat != 0 && relation.location_lng != 0) {
+
+                                var myIcon = new L.Icon({
+                                    iconUrl: 'images/videomarker.png',
+                                    iconRetinaUrl: 'images/videomarker@2x.png',
+                                    iconSize: [25, 41],
+                                    iconAnchor: [12, 41]
+                                })
+
+                                var popupContent = `Selected Video: <br> Video Name: ${relation.video_name} <br> Description: ${relation.video_description} `;
+                                var marker = new L.Marker(L.latLng(relation.location_lat, relation.location_lng), {
+                                    clickable: true,
+                                    icon: myIcon
+                                }).bindPopup(popupContent);
+
+                                marker.on('click', function (e) {
+                                    $scope.newVideo = video;
+                                    $scope.newVideo.location = {
+                                        lat: relation.location_lat,
+                                        lng: relation.location_lng,
+                                        location_id: relation.location_id
+                                    }
+                                })
+                                videoMarkers.push(marker);
+                            }
+
+                            if (video_index == videos.data.length - 1) {
+                                leafletData.getMap('addExistingVideoMap').then(function (map) {
+                                    // Clear map first;
+                                    if ($scope.featureGroup != null) {
+                                        map.removeLayer($scope.featureGroup);
+                                    }
+                                    $scope.featureGroup = new L.featureGroup(videoMarkers).addTo(map);
+                                    map.fitBounds($scope.featureGroup.getBounds(), {
+                                        animate: false,
+                                        padding: L.point(50, 50)
+                                    });
+                                })
+                            }
+                        }
+
+                    }, this);
+                }, this);
+
+
+                /**
+                 * Function to search the videos
+                 */
+
+                $scope.searchVideo = function () {
+
+                    var searchVideoMarkers = [];
+                    relations.data.forEach(function (relation) {
+
+                        // Add all if the term is empty
+                        if ($scope.searchVideoTerm == "") {
+                            if (relation.location_type != "indoor" && relation.location_lat != 0 && relation.location_lng != 0) {
+
+                                var myIcon = new L.Icon({
+                                    iconUrl: 'images/videomarker.png',
+                                    iconRetinaUrl: 'images/videomarker@2x.png',
+                                    iconSize: [25, 41],
+                                    iconAnchor: [12, 41]
+                                })
+
+                                var popupContent = `Selected Video: <br> Video Name: ${relation.video_name} <br> Description: ${relation.video_description} `;
+                                var marker = new L.Marker(L.latLng(relation.location_lat, relation.location_lng), {
+                                    clickable: true,
+                                    icon: myIcon
+                                }).bindPopup(popupContent);
+
+                                marker.on('click', function (e) {
+                                    $scope.newVideo = {
+                                        name: relation.video_name,
+                                        description: relation.video_description,
+                                        id: relation.video_id,
+                                        recorded: relation.video_recorded,
+                                        url: relation.video_url,
+                                        created: relation.video_created,
+                                        updated: relation.video_updated
+                                    }
+                                })
+                                searchVideoMarkers.push(marker);
+                            }
+                            return;
+                        }
+
+                        // add matches
+                        if (relation.video_name.search($scope.searchVideoTerm) != -1) {
+
+                            var myIcon = new L.Icon({
+                                iconUrl: 'images/videomarker.png',
+                                iconRetinaUrl: 'images/videomarker@2x.png',
+                                iconSize: [25, 41],
+                                iconAnchor: [12, 41]
+                            })
+
+                            var popupContent = `Selected Video: <br> Video Name: ${relation.video_name} <br> Description: ${relation.video_description} `;
+                            var marker = new L.Marker(L.latLng(relation.location_lat, relation.location_lng), {
+                                clickable: true,
+                                icon: myIcon
+                            }).bindPopup(popupContent);
+                            marker.on('click', function (e) {
+
+                                $scope.newVideo = {
+                                    name: relation.video_name,
+                                    description: relation.video_description,
+                                    id: relation.video_id,
+                                    recorded: relation.video_recorded,
+                                    url: relation.video_url,
+                                    created: relation.video_created,
+                                    updated: relation.video_updated
+                                }
+
+                                $scope.existingVideo = true;
+
+                            })
+
+                            searchVideoMarkers.push(marker);
+                        }
+
+                    }, this);
+
+                    // Clear map and add new featureGroup with searchResults
+                    leafletData.getMap('addExistingVideoMap').then(function (map) {
+                        map.removeLayer($scope.featureGroup);
+                        $scope.featureGroup = new L.featureGroup(searchVideoMarkers).addTo(map);
+                        map.fitBounds($scope.featureGroup.getBounds(), {
+                            animate: false,
+                            padding: L.point(50, 50)
+                        });
+                    })
+                }
+            })
+        })
+    }
+
 });
+
 // Directive to handle the overlay positioning mockup
 app.directive('ngDraggable', function ($document) {
     return {

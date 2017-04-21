@@ -9,7 +9,12 @@ app.controller("videoCreateNewController", function ($scope, $rootScope, config,
         description: "",
         tags: "",
         recorded: "",
-        location: { name: "", description: "", lng: 0, lat: 0 }
+        location: {
+            name: "",
+            description: "",
+            lng: 0,
+            lat: 0
+        }
     }
 
     $rootScope.currentCategory = "Videos";
@@ -78,7 +83,10 @@ app.controller("videoCreateNewController", function ($scope, $rootScope, config,
         leafletData.getMap('addNewVideoMap').then(function (map) {
 
             featureGroup = L.featureGroup(locationMarkers).addTo(map);
-            map.fitBounds(featureGroup.getBounds(), { animate: false, padding: L.point(50, 50) });
+            map.fitBounds(featureGroup.getBounds(), {
+                animate: false,
+                padding: L.point(50, 50)
+            });
 
             // Add colored marker to the center
             var myIcon = new L.Icon({
@@ -140,7 +148,9 @@ app.controller("videoCreateNewController", function ($scope, $rootScope, config,
             if (searchTerm == "") {
 
                 var popupContent = `Location: ${location.name}`;
-                var marker = new L.Marker(L.latLng(location.lat, location.lng), { clickable: true }).bindPopup(popupContent);
+                var marker = new L.Marker(L.latLng(location.lat, location.lng), {
+                    clickable: true
+                }).bindPopup(popupContent);
                 marker.on('click', function (e) {
                     $scope.newVideo.location.lat = e.latlng.lat;
                     $scope.newVideo.location.lng = e.latlng.lng;
@@ -160,7 +170,9 @@ app.controller("videoCreateNewController", function ($scope, $rootScope, config,
             if (location.name.search(searchTerm) != -1) {
 
                 var popupContent = `Location: ${location.name}`;
-                var marker = new L.Marker(L.latLng(location.lat, location.lng), { clickable: true }).bindPopup(popupContent);
+                var marker = new L.Marker(L.latLng(location.lat, location.lng), {
+                    clickable: true
+                }).bindPopup(popupContent);
                 marker.on('click', function (e) {
                     $scope.newVideo.location.lat = e.latlng.lat;
                     $scope.newVideo.location.lng = e.latlng.lng;
@@ -321,15 +333,21 @@ app.controller("videoCreateNewController", function ($scope, $rootScope, config,
         }
 
         if ($scope.createLocation) {
-            uploadVideoData.location = { newLocation: $scope.newLocation, newVideo: $scope.newVideo }
+            uploadVideoData.location = {
+                newLocation: $scope.newLocation,
+                newVideo: $scope.newVideo
+            }
         } else {
-            uploadVideoData.location = { existing_name: location_name, newVideo: $scope.newVideo }
+            uploadVideoData.location = {
+                existing_name: location_name,
+                newVideo: $scope.newVideo
+            }
         }
 
         Upload.upload({
-            url: '/cms/videos/upload',
-            data: uploadVideoData
-        })
+                url: '/cms/videos/upload',
+                data: uploadVideoData
+            })
             .progress(function (evt) {
                 var progressPercentage = parseInt(100.0 * evt.loaded / evt.total);
 
@@ -358,7 +376,7 @@ app.controller("videoCreateNewController", function ($scope, $rootScope, config,
                     var recorded_at = {
                         video_id: createdVideo.data.video_id,
                         location_id: $scope.newLocation.location_id,
-                        preferred: false    //What does this parameter do?
+                        preferred: false //What does this parameter do?
                     }
 
                     $relationshipService.create('recorded_at', recorded_at).then(function (createdRelation) {
@@ -383,10 +401,10 @@ app.controller("videoCreateNewController", function ($scope, $rootScope, config,
 
 
     /**
- * [redirect description]
- * @param  {[type]} path [description]
- * @return {[type]}      [description]
- */
+     * [redirect description]
+     * @param  {[type]} path [description]
+     * @return {[type]}      [description]
+     */
     $scope.redirect = function (path) {
         $location.url(path);
     };
