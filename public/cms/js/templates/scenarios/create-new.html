@@ -63,10 +63,7 @@
             <div ng-repeat="video in newScenario.videos" class="col-md-4 scenario">
                 <p>{{video.name}}</p>
                 <img width="300px" height="169px" src="{{video.url + '_thumbnail.png'}}"></br>
-                <!--<a href="" ng-click=""><i class="fa fa-pencil-square-o" aria-hidden="true"></i></a>-->
-                <a href="" ng-click=""><i class="fa fa-trash-o" aria-hidden="true"></i></a></br>
-                <!--<label for="vid_position">Position</label>
-                <input type="number" value="{{video.scenario_position}}" id="vid_position"></input>-->
+                <a href="" ng-click="removeTempVideo($index)"><i class="fa fa-trash-o" aria-hidden="true"></i></a></br>
             </div>
 
             <div class="col-md-4 addScenario">
@@ -244,7 +241,7 @@
                         <th>{{overlay.name}}</th>
                         <td>{{overlay.description}}</td>
                         <td>{{overlay.category}}</td>
-                        <td><button class="btn btn-secondary" ng-click="selectOverlay(overlay)" type="button">Select</button>
+                        <td><button class="btn btn-secondary" ng-class="{'active': selectedOverlay.overlay_id === overlay.overlay_id}" ng-click="selectOverlay(overlay)" type="button">Select</button>
                     </tr>
                 </tbody>
             </table>
@@ -337,6 +334,7 @@
     </div>
 </div>
 
+<!--Step 4 (Finish Creation)-->
 <div ng-show="currentState.finishScenario">
     <div class="row">
         <div class="col-md-12 col-center">

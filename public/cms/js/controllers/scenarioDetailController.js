@@ -146,6 +146,53 @@ app.controller("scenarioDetailController", function ($scope, $rootScope, $route,
         $location.url(path);
     };
 
+    // Function that is triggered, when the delete button has been pressed
+    $scope.deleteScenario = function () {
+        var scenario_id = $scope.scenario.scenario_id;
+        if ($window.confirm(`You are going to delete the Scenario. Are you sure? THIS WILL NOT BE REVERSIBLE!`)) {
+            if ($window.confirm('Are you really, really sure?')) {
+
+                // First delete any relationships the scenario has
+                // Since the API doesn't give a way to display all belongs_to relations we need to
+                // do it individually for every 'label' (overlay, loc, vid) of belongs_to relation
+                $relationshipService.list_by_type('belongs_to', 'video').then(function (response) {
+                    var relations = response.data;
+                    relations.forEach(function (relation) {
+                        if (relation.scenario_id == scenario_id) {
+                            $relationshipService.remove(relation.relation_id);
+                        }
+                    }, this);
+                })
+
+                $relationshipService.list_by_type('belongs_to', 'location').then(function (response) {
+                    var relations = response.data;
+                    relations.forEach(function (relation) {
+                        if (relation.scenario_id == scenario_id) {
+                            $relationshipService.remove(relation.relation_id);
+                        }
+                    }, this);
+                })
+
+                $relationshipService.list_by_type('belongs_to', 'overlay').then(function (response) {
+                    var relations = response.data;
+                    relations.forEach(function (relation) {
+                        if (relation.scenario_id == scenario_id) {
+                            $relationshipService.remove(relation.relation_id);
+                        }
+                    }, this);
+                })
+
+                // Then remove the scenario
+                $scenarioService.remove(scenario_id).then(function (response) {
+                    // .. and return to the overview
+                    $scope.redirect('/scenarios');
+                })
+
+
+            }
+        }
+    }
+
     // Function that is triggered, when the edit button has been pressed
     $scope.editScenario = function () {
 

@@ -211,8 +211,10 @@ app.controller("scenarioCreateNewController", function ($scope, config, $authent
                     startUpload();
                 });
         }
+    }
 
-
+    $scope.removeTempVideo = function(index){
+        $scope.newScenario.videos.splice(index, 1);
     }
 
     // Function to cancel an action and be redirected back to the last page
@@ -290,9 +292,7 @@ app.controller("scenarioCreateNewController", function ($scope, config, $authent
         }
 
         $scope.searchOverlay = function () {
-
             $overlayService.list().then(function (response) {
-
                 var overlays = response.data;
                 $scope.overlaySearchResults = [];
 
@@ -688,6 +688,13 @@ app.controller("scenarioCreateNewController", function ($scope, config, $authent
             lng_input.parent().parent().addClass('has-danger');
             isValid = false;
         }
+
+        if(Object.keys($scope.newVideo.location).length === 0){
+            $window.alert('Please select a Location before starting the upload!');
+            isValid = false;
+        }
+
+        console.log($scope.newVideo);
         return isValid;
     }
 

@@ -23,10 +23,21 @@ app.controller("scenarioOverviewController", function ($scope, $rootScope, $wind
     $scenarioService.list()
         .then(function onSuccess(response) {
             $scope.scenarios = response.data;
+            $relationshipService.list_by_type('belongs_to', 'video').then(function onSuccess(allVideos) {
 
-            $scope.scenarios.forEach(function (element) {
-                element.tags = ['tag1', 'tag2', 'tag3', 'tag4', 'tag5']
-            }, this);
+                $scope.scenarios.forEach(function (scenario) {
+                    scenario.tags = ['tag1', 'tag2', 'tag3', 'tag4', 'tag5']
+                    var found = false;
+                    // Add thumbnail images
+                    allVideos.data.forEach(function (video) {
+                        if (video.scenario_id == scenario.scenario_id && !found) {
+                            found = true;
+                            scenario.thumbnail = video.video_url + '_thumbnail.png';
+                        }
+                    }, this);
+                }, this);
+            })
+
         })
 
     /**
