@@ -104,6 +104,11 @@ app.config(function ($routeProvider, $locationProvider, config) {
             controller: "locationDetailController",
             css: "css/templates/locations/detail.css"
         })
+        .when("/about", {
+            templateUrl: "js/templates/about.html",
+            controller: "aboutController",
+            css: "css/templates/about.css"
+        })
 
         // Redirect to home page
         .otherwise({

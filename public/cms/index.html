@@ -73,7 +73,6 @@
 
 <body>
 
-	<!--<header ng-controller="navController">-->
 	<!-- Navigation -->
 	<nav class="navbar navbar-toggleable-md fixed-top">
 		<button class="navbar-toggler navbar-toggler-right hidden-lg-up" type="button" data-toggle="collapse" data-target="#navbarsExampleDefault"
@@ -86,8 +85,6 @@
 			<a ng-if="currentCategory != null && currentSite != null" class="breadcrumb-item" href="" ng-click="redirectBreadcrumb()">{{currentCategory}}</a>
 			<span ng-if="currentCategory != null && currentSite == null" class="breadcrumb-item active">{{currentCategory}}</span>
 			<span ng-if="currentSite != null" class="breadcrumb-item active">{{currentSite}}</span>
-			<!--<a class="breadcrumb-item" href="#">Data</a>-->
-			<!--<span class="breadcrumb-item active">Bootstrap</span>-->
 		</nav>
 	</nav>
 
@@ -151,6 +148,9 @@
 						</a>
 					</li>-->
 				</ul>
+				<ul class="nav nav-bottom nav-pills flex-column">
+					<a ng-click="redirect('/about')" href="#">About</a>
+				</ul>
 			</nav>
 
 			<!--Main Content Area-->
@@ -181,6 +181,7 @@
 	<!--Controllers-->
 	<script src="js/controllers/navController.js"></script>
 	<script src="js/controllers/homeController.js"></script>
+	<script src="js/controllers/aboutController.js"></script>
 
 	<script src="js/controllers/scenarioOverviewController.js"></script>
 	<script src="js/controllers/scenarioCreateNewController.js"></script>
@@ -197,7 +198,6 @@
 	<script src="js/controllers/locationOverviewController.js"></script>
 	<script src="js/controllers/locationCreateNewController.js"></script>
 	<script src="js/controllers/locationDetailController.js"></script>
-
 
 </body>
 

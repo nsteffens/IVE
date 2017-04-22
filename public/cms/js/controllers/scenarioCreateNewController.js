@@ -693,8 +693,6 @@ app.controller("scenarioCreateNewController", function ($scope, config, $authent
             $window.alert('Please select a Location before starting the upload!');
             isValid = false;
         }
-
-        console.log($scope.newVideo);
         return isValid;
     }
 

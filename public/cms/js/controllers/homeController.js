@@ -16,11 +16,9 @@ app.controller("homeController", function ($scope, $rootScope, $relationshipServ
 
     $relationshipService.list_by_type("belongs_to", "location")
         .then(function onSuccess(response) {
-
             // Iterate over the locations and create markers --> add type (video / scenarios) to obj
             var scenarioID = "";
             response.data.forEach(function (element) {
-
                 // Indoor locations won't be added but it's abstract parent will
                 if (element.location_type != "indoor") {
 
@@ -37,20 +35,15 @@ app.controller("homeController", function ($scope, $rootScope, $relationshipServ
                         iconSize: [25, 41],
                         iconAnchor: [12, 41]
                     })
-
-
                     var markerObject = L.marker(L.latLng(element.location_lat, element.location_lng), {
                         title: element.scenario_name,
                         clickable: true,
                         icon: myIcon
                     })
 
-                    markerObject.on('click', function(){
-                        $scope.redirect('/scenarios/'+element.scenario_id);
+                    markerObject.on('click', function () {
+                        $scope.redirect('/scenarios/' + element.scenario_id);
                     })
-
-
-
 
                     if (element.location_type == "abstract") {
                         markerObject.options.title = element.location_name + " ABSTRACT";
